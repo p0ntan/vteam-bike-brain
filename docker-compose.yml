@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  python: # Not adding image-name here because it is local
+    container_name: "bike-python"
+    build: "./"
+    working_dir: "/bike/app"
+    volumes:
+      - "./app/:/bike/app"
+      - "/app/src/__pycache__"
+    restart:
+      "on-failure"
