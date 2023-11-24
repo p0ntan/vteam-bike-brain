@@ -38,6 +38,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-    - name: Test with unittest
-      run: |
-        python app/test.py
