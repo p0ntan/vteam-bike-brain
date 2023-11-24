@@ -2,16 +2,17 @@
 """
 Bike module
 """
-import requests
+
 import time
 import threading
+import requests
 
 class Bike():
-    API_URL = 'http://express-server:1337/bikes/'
-
     """
     Class that represents the bike and it's brain (functionality)
     """
+    API_URL = 'http://express-server:1337/bikes/'
+
     def __init__(self, data, interval=10):
         """ Constructor """
         self._status = data['status']
@@ -20,26 +21,29 @@ class Bike():
         self._lng = data['lng']
         self._interval = interval
         # self._simulations = data['trips']
-        
+
         # Set up a thread for the bike loop
         self._thread = threading.Thread(target=self._run_bike)
         # Bike needs to be started with metod start()
         self._running = False
 
-
     @property
     def id(self):
+        """ Getter for id """
         return self._id
 
     @property
     def interval(self):
+        """ Getter for interval"""
         return self._interval
 
     @interval.setter
     def interval(self, interval):
+        """ Setter for interval """
         self._interval = interval
 
     def get_data(self):
+        """ Get data to send to server """
         return {
             'id': self.id,
             'status': self._status,
@@ -59,11 +63,12 @@ class Bike():
     #         for position in trip:
     #             self._lat = position[0]
     #             self._lng = position[1]
-    
+
     #             self._update_bike_data(self.get_data())
     #             time.sleep(2)
 
     def _update_bike_data(self, data):
+        """ Method do send data to server """
         response = requests.post(self.API_URL, json=data)
         if response.status_code == 200:
             data = response.json()
@@ -72,9 +77,11 @@ class Bike():
             print(f"Errorcode: {response.status_code}")
 
     def start(self):
+        """ Start the bikes program """
         self._running = True
         self._thread.start()
 
     def stop(self):
+        """ Stop the bikes program """
         self._running = False
         self._thread.join()
