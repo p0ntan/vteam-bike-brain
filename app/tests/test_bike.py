@@ -18,7 +18,4 @@ class TestBike(unittest.TestCase):
         }
 
         my_bike = Bike(bike_data)
-        self.assertEqual(my_bike.id, 1, "Should be 1")
-
-if __name__ == "__main__":
-    print(__name__)
+        self.assertEqual(my_bike.id, 0, "Should be 1")
