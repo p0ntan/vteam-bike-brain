@@ -7,6 +7,7 @@ services:
     working_dir: "/bike/app"
     volumes:
       - "./app/:/bike/app"
-      - "/app/src/__pycache__"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
     restart:
       "on-failure"
