@@ -22,6 +22,10 @@ class GpsBase(ABC):
     def speed(self):
         """ int: speed for the bike in km/h """
 
+    @abstractmethod
+    def update_position(self, new_position, time_in_seconds):
+        """ Method for updating the gps-position """
+
 class GpsSimulator(GpsBase):
     """" The gps-class used in the simulation
 
