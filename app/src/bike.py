@@ -52,6 +52,7 @@ class Bike():
         }
 
     def _run_bike(self):
+        """ The loop in the bike when program is running. """
         while self._running:
             data = self.get_data()
             self._update_bike_data(data)
@@ -69,7 +70,7 @@ class Bike():
 
     def _update_bike_data(self, data):
         """ Method do send data to server """
-        response = requests.post(self.API_URL, json=data)
+        response = requests.post(self.API_URL, json=data, timeout=1.5)
         if response.status_code == 200:
             data = response.json()
             print(data)
