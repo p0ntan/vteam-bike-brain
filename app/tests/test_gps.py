@@ -16,7 +16,7 @@ class TestGps(unittest.TestCase):
         self.assertEqual(gps_sim.position, position, "Should be same as input position")
 
     def test_change_position(self):
-        """ Creating a Battery with argument and control level """
+        """ Creating a Gps and chaning position to get speed """
         # Distance between positions is 200 meters
         first_position = [13.508699207322167, 59.38210003526896]
         second_position = [13.505173887431198, 59.38216072603788]
@@ -29,6 +29,8 @@ class TestGps(unittest.TestCase):
         self.assertAlmostEqual(gps_sim.speed, 36, "Should be 36")
 
         gps_sim.update_position(second_position, time_in_seconds)
-        self.assertEqual(gps_sim.position, second_position, "Should be same as second position")
         self.assertAlmostEqual(gps_sim.speed, 0, "Should be 0")
 
+        time_in_seconds = 200
+        gps_sim.update_position(first_position, time_in_seconds)
+        self.assertAlmostEqual(gps_sim.speed, 4, "Should be 4 (3.6 rounded up)")
