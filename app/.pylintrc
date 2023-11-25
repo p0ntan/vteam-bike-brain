@@ -83,6 +83,7 @@ fail-on=
 enable=
     use-symbolic-message-instead,
     useless-suppression,
+    abstract-method,
 
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifiers separated by comma (,) or put this
@@ -338,7 +339,6 @@ docstring-min-length=-1
 
 # List of decorators that define properties, such as abc.abstractproperty.
 property-classes=abc.abstractproperty
-
 
 [TYPECHECK]
 

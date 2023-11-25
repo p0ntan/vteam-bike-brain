@@ -7,7 +7,7 @@ from src.bike import Bike
 
 class TestBike(unittest.TestCase):
     """ Testclass for testing class Bike """
-    
+
     def test_create_bike(self):
         """ Creating a Bike and checks id """
         bike_data = {
