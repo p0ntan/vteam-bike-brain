@@ -22,10 +22,6 @@ class GpsBase(ABC):
     def speed(self):
         """ int: speed for the bike in km/h """
 
-    @abstractmethod
-    def update_position(self, new_position, time_in_seconds):
-        """ Method for updating the gps-position """
-
 class GpsSimulator(GpsBase):
     """" The gps-class used in the simulation
 
@@ -42,21 +38,21 @@ class GpsSimulator(GpsBase):
         """ list[float]: position in [latitude, longitude] """
         return self._position
 
-    def update_position(self, new_position, time_in_seconds):
-        """ Set the position, will also update the speed.
+    @position.setter
+    def position(self, new_data):
+        """ new_data includes new position and time
         
         Args:
-            new_position (list[float]): the new position
-            time_in_seconds (float): the time in seconds
+            new_data (tuple[list, int]): position and elapsed time
         """
         last_pos = tuple(self._position)
-        new_pos = tuple(new_position)
+        new_pos = tuple(new_data[0])
         distance_from_last_update = distance(lonlat(*last_pos), lonlat(*new_pos)).meters
-        meter_pr_second = distance_from_last_update / time_in_seconds
+        meter_pr_second = distance_from_last_update / new_data[1]
         km_pr_hour = meter_pr_second * 3.6
 
         self._speed = km_pr_hour
-        self._position = new_position
+        self._position = new_data[0]
 
     @property
     def speed(self):
