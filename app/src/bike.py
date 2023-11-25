@@ -6,21 +6,29 @@ Bike module
 import time
 import threading
 import requests
+from src.battery import BatteryBase
+from src.gps import GpsBase
 
-class Bike():
+class Bike:
     """
     Class that represents the bike and it's brain (functionality)
+
+    Args:
+        data (dict): data for the bike from the database
+        battery (BatteryBase): the battery used in the bike
+        gps (GpsBase): the gps for the bike, used for position and speed
+        simulation (dict=None): simulation data for bike, default is None
+        interval (int=10): interval for the bike to send data to server, default is 10
     """
     API_URL = 'http://express-server:1337/bikes/'
 
-    def __init__(self, data, interval=10):
-        """ Constructor """
+    def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
         self._status = data['status']
         self._id = data['id']
-        self._lat = data['lat']
-        self._lng = data['lng']
+        self._gps = gps
+        self._battery = battery
         self._interval = interval
-        # self._simulations = data['trips']
+        self._simulation = simulation
 
         # Set up a thread for the bike loop
         self._thread = threading.Thread(target=self._run_bike)
@@ -29,26 +37,27 @@ class Bike():
 
     @property
     def id(self):
-        """ Getter for id """
+        """ int: the bikes id """
         return self._id
 
     @property
     def interval(self):
-        """ Getter for interval"""
+        """ int: interval for the bike to send data """
         return self._interval
 
     @interval.setter
     def interval(self, interval):
-        """ Setter for interval """
         self._interval = interval
 
     def get_data(self):
-        """ Get data to send to server """
+        """ Get data to send to server
+        
+        Returns:
+            dict: with data needed for the server
+        """
         return {
             'id': self.id,
             'status': self._status,
-            'lat': self._lat,
-            'lng': self._lng
         }
 
     def _run_bike(self):
@@ -60,7 +69,7 @@ class Bike():
             time.sleep(self._interval)
 
     # def run_simulation(self):
-    #     for trip in self._simulations:
+    #     for trip in self._simulation:
     #         for position in trip:
     #             self._lat = position[0]
     #             self._lng = position[1]

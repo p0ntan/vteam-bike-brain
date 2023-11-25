@@ -15,7 +15,7 @@ class BatteryBase(ABC):
     @property
     @abstractmethod
     def level(self):
-        """ Method to get the batterylevel """
+        """ float: the lever for the battery """
 
 class BatterySimulator(BatteryBase):
     """ The battery-class used in the simulation.
@@ -30,11 +30,7 @@ class BatterySimulator(BatteryBase):
 
     @property
     def level(self):
-        """ Gets the battery level, then lower it by the given level class attribute
-
-        Returns:
-            float: The battery level
-        """
+        """ float: the lever of the battery. Will be lowered in simulation automaticly. """
         old_level = self._level
         self._level -= self._level_reduction
         return old_level
