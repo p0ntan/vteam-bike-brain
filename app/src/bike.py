@@ -23,7 +23,8 @@ class Bike:
     API_URL = 'http://express-server:1337/bikes/'
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
-        self._status = data['status']
+        self._status = data['status_id']
+        self._city_id = data['city_id']
         self._id = data['id']
         self._gps = gps
         self._battery = battery
