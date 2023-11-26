@@ -14,11 +14,12 @@ class TestBike(unittest.TestCase):
         """ Creating a Bike and checks data """
         bike_data = {
             'id': 1,
-            'status': 1,
-            'position': [13.508699207322167, 59.38210003526896],
+            'city_id': 'STHLM',
+            'status_id': 1,
+            'geometry': [13.508699207322167, 59.38210003526896],
         }
 
-        gps_sim = GpsSimulator(bike_data['position'])
+        gps_sim = GpsSimulator(bike_data['geometry'])
         battery_sim = BatterySimulator()
 
         bike_instance = Bike(bike_data, battery_sim, gps_sim)
@@ -47,16 +48,17 @@ class TestBike(unittest.TestCase):
         """ Update position for a bike, see that it sends out speed and new position """
         bike_data = {
             'id': 1,
-            'status': 1,
-            'position': [13.508699207322167, 59.38210003526896],
+            'city_id': 'STHLM',
+            'status_id': 1,
+            'geometry': [13.508699207322167, 59.38210003526896],
         }
-        gps_sim = GpsSimulator(bike_data['position'])
+        gps_sim = GpsSimulator(bike_data['geometry'])
         battery_sim = BatterySimulator()
         bike_instance = Bike(bike_data, battery_sim, gps_sim)
 
         data_from_bike = bike_instance.get_data()
         self.assertEqual(data_from_bike['speed'], 0, "Should be 0")
-        self.assertEqual(data_from_bike['position'], bike_data['position'], "Should be an list of coordinates")
+        self.assertEqual(data_from_bike['position'], bike_data['geometry'], "Should be an list of coordinates")
 
         new_position = [13.505173887431198, 59.38216072603788] # 200 meters between this and original position
         interval_in_seconds = 10

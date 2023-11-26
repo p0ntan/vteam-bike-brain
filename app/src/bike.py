@@ -72,14 +72,15 @@ class Bike:
 
             time.sleep(self._interval)
 
-    # def run_simulation(self):
-    #     for trip in self._simulation:
-    #         for position in trip:
-    #             self._lat = position[0]
-    #             self._lng = position[1]
+    def run_simulation(self):
+        """ Method to run the simulation for a bike. """
+        for trip in self._simulation['trips']:
+            for position in trip['coords']:
+                new_position = position
+                self._gps.position = (new_position, self._interval)
 
-    #             self._update_bike_data(self.get_data())
-    #             time.sleep(2)
+                self._update_bike_data(self.get_data())
+                time.sleep(self._interval)
 
     def _update_bike_data(self, data):
         """ Method do send data to server """
