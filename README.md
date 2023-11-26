@@ -10,6 +10,9 @@ Set up the repo with:
 ```
 ./setup.bash up
 ```
-This will start a container and keep it in the shell.
 
-More info is coming....
+## Teardown
+This will start a container and keep it in the shell. To remove images when container is closed, run:
+```
+./setup.bash down
+```
