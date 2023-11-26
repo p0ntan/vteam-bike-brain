@@ -58,6 +58,9 @@ class Bike:
         return {
             'id': self.id,
             'status': self._status,
+            'battery_level': self._battery.level,
+            'position': self._gps.position,
+            'speed': self._gps.speed
         }
 
     def _run_bike(self):
@@ -81,8 +84,7 @@ class Bike:
         """ Method do send data to server """
         response = requests.post(self.API_URL, json=data, timeout=1.5)
         if response.status_code == 200:
-            data = response.json()
-            print(data)
+            print(response.json())
         else:
             print(f"Errorcode: {response.status_code}")
 
