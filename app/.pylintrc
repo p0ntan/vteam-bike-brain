@@ -104,7 +104,7 @@ disable=
     # handled by black
     # format,
     # We anticipate #3512 where it will become optional
-    # fixme,
+    fixme,
     # cyclic-import,
     # import-error,
 
