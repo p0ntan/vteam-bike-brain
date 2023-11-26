@@ -33,10 +33,10 @@ class RouteHandler():
         routes = {}
         for filename in os.listdir(directory):
             if filename.endswith('.json'):
-                bike_id = filename[:-5] # Remove .json
+                bike_id = int(filename[:-5]) # Remove .json
                 filepath = os.path.join(directory, filename)
                 with open(filepath, 'r', encoding="UTF-8") as file:
-                    routes[int(bike_id)] = json.load(file) # Save into dict with filename as key (id)
+                    routes[bike_id] = json.load(file) # Save into dict with filename as key (id)
         return routes
 
     # def _check_coordinates(self, routes):
