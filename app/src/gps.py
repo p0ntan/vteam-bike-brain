@@ -29,7 +29,7 @@ class GpsSimulator(GpsBase):
         position (list[float]): the position in [latitude, longitude]    
     """
 
-    def __init__(self, position):
+    def __init__(self, position: list):
         self._position = position
         self._speed = 0
 
@@ -39,7 +39,7 @@ class GpsSimulator(GpsBase):
         return self._position
 
     @position.setter
-    def position(self, new_data):
+    def position(self, new_data: tuple):
         """ new_data includes new position and time
         
         Args:

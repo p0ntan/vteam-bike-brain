@@ -33,4 +33,4 @@ class BatterySimulator(BatteryBase):
         """ float: the lever of the battery. Will be lowered in simulation automaticly. """
         old_level = self._level
         self._level -= self._level_reduction
-        return old_level
+        return round(old_level, 2)
