@@ -11,17 +11,16 @@ class BikeFactory:
     """ Class for creating a bike, aka bike-factory.
 
     Args:
-        bike (Bike): the bike class
-        gps (GpsSimulator): the GPS-simulator class
-        battery (BatterySimulator): the battery simulator class
         bike_data (dict): data used in initialization of the bikes
         routes (dict): route-data used for simulation
+        interval (int=10): interval in seconds for simulation (in movement)
     """
 
     def __init__(
             self,
             bike_data: dict,
-            routes: dict
+            routes: dict,
+            interval: int=10
         ):
         """ Initialize the bike and inject gps, battery and data """
 
@@ -32,7 +31,7 @@ class BikeFactory:
             simulation = routes[bike_id]
             gps_sim = GpsSimulator(json.loads(data_item['geometry']))
             battery_sim = BatterySimulator()
-            new_bike = Bike(data_item, battery_sim, gps_sim, simulation)
+            new_bike = Bike(data_item, battery_sim, gps_sim, simulation, interval)
 
             self._bikes.append(new_bike)
 
