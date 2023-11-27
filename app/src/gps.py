@@ -45,8 +45,8 @@ class GpsSimulator(GpsBase):
         Args:
             new_data (tuple[list, int]): position and elapsed time
         """
-        last_pos = tuple(self._position)
-        new_pos = tuple(new_data[0])
+        last_pos = self._position
+        new_pos = new_data[0]
         distance_from_last_update = distance(lonlat(*last_pos), lonlat(*new_pos)).meters
         meter_pr_second = distance_from_last_update / new_data[1]
         km_pr_hour = meter_pr_second * 3.6
