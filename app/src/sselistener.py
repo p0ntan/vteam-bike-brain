@@ -31,11 +31,10 @@ class SSEListener:
                         try:
                             line = line.decode('utf-8').rstrip()
                             json_str = line[6:]
-                            print(json_str)
                             data = json.loads(json_str)
                             await self._control_bike(data)
-                        except json.JSONDecodeError:
-                            print("Ogiltig JSON mottagen.")
+                        except json.JSONDecodeError as error:
+                            print(f"Error with JSON-format: {error}")
                         except Exception as error:
                             print(f"Error in SSE connection: {error}")
 
@@ -45,9 +44,7 @@ class SSEListener:
         Args:
             data (dict): data to decide what to do with bike.
         """
-        if 'msg' in data and data['msg'] == 'start_simulation':
-            await self._bike.stop()
+        if data['msg'] == 'start_simulation':
             await self._bike.run_simulation()
-
-        if data['id'] == self._bike.id():
+        elif data['id'] == self._bike.id():
             print(await self._bike.get_data())

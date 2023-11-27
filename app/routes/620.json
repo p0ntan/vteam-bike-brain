@@ -1,0 +1,129 @@
+{
+    "city": 2,
+    "initialStart": [
+        13.57348,
+        59.40095
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": 315.9,
+                "duration": 56.1
+            },
+            "user": {
+                "id": 1239,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzOSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NDg3NDQsImV4cCI6MTczMjQ4NDc0NH0.A8MR-AwzoQY8LPl7KJvJN5mIiNxO7nVI1PAHlZHalMA"
+            },
+            "coords": [
+                [
+                    13.57348,
+                    59.40095
+                ],
+                [
+                    13.57362,
+                    59.40118
+                ],
+                [
+                    13.57367,
+                    59.40124
+                ],
+                [
+                    13.57377,
+                    59.40129
+                ],
+                [
+                    13.57421,
+                    59.40123
+                ],
+                [
+                    13.57477,
+                    59.40114
+                ],
+                [
+                    13.57532,
+                    59.40106
+                ],
+                [
+                    13.57617,
+                    59.40093
+                ],
+                [
+                    13.5766,
+                    59.40157
+                ],
+                [
+                    13.57731,
+                    59.40147
+                ],
+                [
+                    13.57722,
+                    59.40135
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": 314.2,
+                "duration": 55.7
+            },
+            "user": {
+                "id": 1240,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTI0MCwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NDg3NDQsImV4cCI6MTczMjQ4NDc0NH0.r3N0b_6AwQIUIDSMtY1gQIU7FF7nsoq2r4_PDM_FBS0"
+            },
+            "coords": [
+                [
+                    13.57722,
+                    59.40135
+                ],
+                [
+                    13.57731,
+                    59.40147
+                ],
+                [
+                    13.5766,
+                    59.40157
+                ],
+                [
+                    13.57617,
+                    59.40093
+                ],
+                [
+                    13.57532,
+                    59.40106
+                ],
+                [
+                    13.57477,
+                    59.40114
+                ],
+                [
+                    13.57421,
+                    59.40123
+                ],
+                [
+                    13.57377,
+                    59.40129
+                ],
+                [
+                    13.57367,
+                    59.40124
+                ],
+                [
+                    13.57362,
+                    59.40118
+                ],
+                [
+                    13.57339,
+                    59.40121
+                ],
+                [
+                    13.57335,
+                    59.40121
+                ],
+                [
+                    13.5733,
+                    59.40113
+                ]
+            ]
+        }
+    ]
+}

@@ -29,10 +29,11 @@ class Bike:
         self._battery = battery
         self._interval = interval # interval in seconds when bike is moving
         self._simulation = simulation
-        self._slow_interval = 5 # interval in seconds when bike stands still
+        self._slow_interval = 30 # interval in seconds when bike stands still
 
         # Bike needs to be started with metod start()
         self._running = False
+        self._running_simulation = False
 
     @property
     def id(self):
@@ -65,14 +66,18 @@ class Bike:
     async def _run_bike(self):
         """ The asynchronous loop in the bike when program is running. """
         while self._running:
-            data = self.get_data()
-            await self._update_bike_data(data)
+            if not self._running_simulation:
+                data = self.get_data()
+                await self._update_bike_data(data)
             await asyncio.sleep(self._slow_interval)
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
         if self._simulation is None:
             return
+
+        self._running_simulation = True
+
         for trip in self._simulation['trips']:
             for position in trip['coords']:
                 self._gps.position = (position, self._interval)
@@ -89,8 +94,9 @@ class Bike:
                         pass
                     else:
                         print(f"Errorcode: {response.status}")
-            except Exception as error:
-                print("Error when updating bike:", error)
+            except asyncio.TimeoutError as error:
+                print("funkar ej")
+                pass
 
     def start(self):
         """ Start the bikes program """

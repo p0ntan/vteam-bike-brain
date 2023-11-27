@@ -19,7 +19,7 @@ async def main():
     interval_in_seconds = 5
     
     # Load routes with RouteHandler
-    r_handler = RouteHandler('./test-routes', interval=interval_in_seconds)
+    r_handler = RouteHandler('./routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
     # Get bike_data from server
