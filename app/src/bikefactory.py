@@ -28,8 +28,11 @@ class BikeFactory:
 
         for data_item in bike_data:
             bike_id = data_item['id']
-            simulation = routes[bike_id]
-            gps_sim = GpsSimulator(json.loads(data_item['geometry']))
+
+            if bike_id in routes:
+                simulation = routes[bike_id]
+
+            gps_sim = GpsSimulator(json.loads(data_item['coords']))
             battery_sim = BatterySimulator()
             new_bike = Bike(data_item, battery_sim, gps_sim, simulation, interval)
 

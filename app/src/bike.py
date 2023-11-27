@@ -18,7 +18,7 @@ class Bike:
         battery (BatteryBase): the battery used in the bike
         gps (GpsBase): the gps for the bike, used for position and speed
         simulation (dict=None): simulation data for bike, default is None
-        interval (int=10): interval for the bike to send data to server, default is 10
+        interval (int=10): interval in seconds for the bike to send data to server, default is 10
     """
     API_URL = 'http://express-server:1337/bikes/'
 
@@ -28,8 +28,9 @@ class Bike:
         self._id = data['id']
         self._gps = gps
         self._battery = battery
-        self._interval = interval
+        self._interval = interval # interval in seconds when bike is moving
         self._simulation = simulation
+        self._slow_interval = 10 # interval in seconds when bike stands still
 
         # Set up a thread for the bike loop
         self._thread = threading.Thread(target=self._run_bike)
@@ -70,10 +71,12 @@ class Bike:
             data = self.get_data()
             self._update_bike_data(data)
 
-            time.sleep(self._interval)
+            time.sleep(self._slow_interval)
 
     def run_simulation(self):
         """ Method to run the simulation for a bike. """
+        if self._simulation is None:
+            return
         for trip in self._simulation['trips']:
             for position in trip['coords']:
                 new_position = position
@@ -86,7 +89,8 @@ class Bike:
         """ Method do send data to server """
         response = requests.post(self.API_URL, json=data, timeout=1.5)
         if response.status_code == 200:
-            print(response.json())
+            # print(response.json())
+            pass
         else:
             print(f"Errorcode: {response.status_code}")
 
