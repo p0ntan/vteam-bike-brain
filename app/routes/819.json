@@ -1,0 +1,121 @@
+{
+    "city": 3,
+    "initialStart": [
+        11.9497,
+        57.71908
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": 283.8,
+                "duration": 48.6
+            },
+            "user": {
+                "id": 1637,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYzNywicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NjE5NDgsImV4cCI6MTczMjQ5Nzk0OH0._4o0YOD4tXdPvtFiwOCHN92DLPTfPa1vNzLQK9mB2NA"
+            },
+            "coords": [
+                [
+                    11.9497,
+                    57.71908
+                ],
+                [
+                    11.94979,
+                    57.71903
+                ],
+                [
+                    11.95007,
+                    57.71892
+                ],
+                [
+                    11.95038,
+                    57.71882
+                ],
+                [
+                    11.95026,
+                    57.71864
+                ],
+                [
+                    11.95014,
+                    57.71845
+                ],
+                [
+                    11.94933,
+                    57.71786
+                ],
+                [
+                    11.94863,
+                    57.71727
+                ],
+                [
+                    11.94874,
+                    57.71725
+                ],
+                [
+                    11.94857,
+                    57.71713
+                ],
+                [
+                    11.94864,
+                    57.7171
+                ],
+                [
+                    11.94861,
+                    57.71708
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": 294.8,
+                "duration": 50.5
+            },
+            "user": {
+                "id": 1638,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYzOCwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NjE5NDgsImV4cCI6MTczMjQ5Nzk0OH0.miDaJi5O0PqVuNSN8JOOabEuN-ykJD49PVTK94ARtYw"
+            },
+            "coords": [
+                [
+                    11.94861,
+                    57.71708
+                ],
+                [
+                    11.94864,
+                    57.7171
+                ],
+                [
+                    11.94857,
+                    57.71713
+                ],
+                [
+                    11.948,
+                    57.71667
+                ],
+                [
+                    11.94791,
+                    57.71671
+                ],
+                [
+                    11.94775,
+                    57.71658
+                ],
+                [
+                    11.94707,
+                    57.71611
+                ],
+                [
+                    11.94618,
+                    57.7156
+                ],
+                [
+                    11.94626,
+                    57.71555
+                ],
+                [
+                    11.94688,
+                    57.71524
+                ]
+            ]
+        }
+    ]
+}

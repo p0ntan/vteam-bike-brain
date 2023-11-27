@@ -1,0 +1,125 @@
+{
+    "city": 3,
+    "initialStart": [
+        11.89688,
+        57.69962
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": "",
+                "duration": ""
+            },
+            "user": {
+                "id": 1525,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUyNSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NTQ0NTMsImV4cCI6MTczMjQ5MDQ1M30.VaY2ftkXPNvCXjUn4gEq__pTxloD2lZTyqW25rznBkw"
+            },
+            "coords": [
+                [
+                    11.89688,
+                    57.69962
+                ],
+                [
+                    11.8968,
+                    57.69946
+                ],
+                [
+                    11.89677,
+                    57.69942
+                ],
+                [
+                    11.8966,
+                    57.69923
+                ],
+                [
+                    11.89635,
+                    57.69904
+                ],
+                [
+                    11.89591,
+                    57.69892
+                ],
+                [
+                    11.89543,
+                    57.69884
+                ],
+                [
+                    11.8945,
+                    57.69892
+                ],
+                [
+                    11.89415,
+                    57.69898
+                ],
+                [
+                    11.894,
+                    57.69902
+                ],
+                [
+                    11.89381,
+                    57.69914
+                ],
+                [
+                    11.8936,
+                    57.69943
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": 445,
+                "duration": 72.8
+            },
+            "user": {
+                "id": 1526,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUyNiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NTQ0NTMsImV4cCI6MTczMjQ5MDQ1M30.2oT160aUqh0KXStDRZ6UdHhLdS_hTRn7xQdYDyyKxzk"
+            },
+            "coords": [
+                [
+                    11.8936,
+                    57.69943
+                ],
+                [
+                    11.89375,
+                    57.69946
+                ],
+                [
+                    11.89401,
+                    57.69956
+                ],
+                [
+                    11.8942,
+                    57.69958
+                ],
+                [
+                    11.8944,
+                    57.69957
+                ],
+                [
+                    11.8947,
+                    57.6995
+                ],
+                [
+                    11.89498,
+                    57.69937
+                ],
+                [
+                    11.89534,
+                    57.69907
+                ],
+                [
+                    11.89543,
+                    57.69896
+                ],
+                [
+                    11.89649,
+                    57.6977
+                ],
+                [
+                    11.89672,
+                    57.69743
+                ]
+            ]
+        }
+    ]
+}

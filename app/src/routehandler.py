@@ -4,17 +4,20 @@ Route-handler module
 """
 import os
 import json
-# from geopy.distance import lonlat, distance
+import math
+from geopy.distance import lonlat, distance
 
 class RouteHandler():
     """ A class for handling routes used for simulation
     
     Args:
         directory (str): the directory to load the routes from. Should contain .json-files.
+        interval (int): the number of seconds each interval will be, decides max-length for coords-distance
     """
-    def __init__(self, directory):
+    def __init__(self, directory, interval=10):
         """ Constructor """
         self._routes = self._load_routes(directory)
+        self._routes = self.check_distance(interval)
 
     @property
     def routes(self):
@@ -39,22 +42,41 @@ class RouteHandler():
                     routes[bike_id] = json.load(file) # Save into dict with filename as key (id)
         return routes
 
-    # def _check_coordinates(self, routes):
-    #     for route in routes.values():
-    #         for trips in route['trips']:
-    #             for i, coord in enumerate(trips):
-    #                 if i == 0:
-    #                     continue
-    #                 last_point = (trips[i-1][0], trips[i-1][1])
-    #                 new_point = (coord[0], coord[1])
-    #                 coords_distance = distance(lonlat(*last_point), lonlat(*new_point)).meters
+    def check_distance(self, interval):
+        """ Checks distance between coordiantes and adds more if needed
+        
+        Args:
+            interval (int): what interval to use for simulation in seconds    
+        """
+        max_speed_m_in_seconds = 5.5 # just under 20 km/h (19.8)
+        max_length = max_speed_m_in_seconds * interval # max length between coordinates
 
-    #                 if coords_distance > 300:
-    #                     # Use recursion for adding new coordinates
-    #                     print(last_point, new_point)
-    #                     print(coords_distance)
+        new_routes = self._routes.copy()
+        for bike_id in new_routes.keys():
+            for i, trip in enumerate(new_routes[bike_id]['trips']):
+                updated_cords = []
+                for j, coords in enumerate(trip['coords']):
+                    try:
+                        updated_cords.append(coords)
+                        next_point = [trip['coords'][j+1][0], trip['coords'][j+1][1]]
+                        coords_distance = distance(lonlat(*coords), lonlat(*next_point)).meters
+                        extra_points_needed = coords_distance / max_length # If more than 1 distance is too long
+                        if extra_points_needed > 1:
+                            split_by = math.ceil(extra_points_needed)
+                            lat_distance = (trip['coords'][j+1][0] - coords[0]) / split_by
+                            lng_distance = (trip['coords'][j+1][1] - coords[1]) / split_by
 
-    #     return routes
+                            for multiply_by in range(1, split_by):
+                                new_lat = round(coords[0] + lat_distance * multiply_by, 6)
+                                new_lng = round(coords[1] + lng_distance * multiply_by, 6)
+                                updated_cords.append([new_lat, new_lng])
+
+                    except IndexError:
+                        # Last point in array
+                        pass
+                new_routes[bike_id]['trips'][i]['coords'] = updated_cords
+
+        return new_routes
 
     # def _add_coords(self):
     #     """ Add coordinates to trip if distance is too long."""

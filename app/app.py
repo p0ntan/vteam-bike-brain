@@ -14,8 +14,11 @@ def main():
 
     Gets simulation data from json-files and bike-data from server. 
     """
+    # Here the interval can be changed for how often bikes should update it's position
+    interval_in_seconds = 10
+    
     # Load routes with RouteHandler
-    r_handler = RouteHandler('./test-routes')
+    r_handler = RouteHandler('./routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
     # Get bike_data from server
@@ -23,7 +26,7 @@ def main():
     bike_data = response.json()
 
     # Initialize bikes with BikeFactory
-    bike_factory = BikeFactory(bike_data, routes)
+    bike_factory = BikeFactory(bike_data, routes, interval=interval_in_seconds)
 
     # Add SSE-listener to each bike
     listeners = []

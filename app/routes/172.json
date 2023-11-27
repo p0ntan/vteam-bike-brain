@@ -1,0 +1,141 @@
+{
+    "city": 1,
+    "initialStart": [
+        18.05414,
+        59.34378
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": 279.8,
+                "duration": 74
+            },
+            "user": {
+                "id": 343,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQzLCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzNTM0NywiZXhwIjoxNzMyNDcxMzQ3fQ.Fd5pb5dpx53YvZlYAe-xob4-IhbOqE-RR1VeHmEGZ6I"
+            },
+            "coords": [
+                [
+                    18.05414,
+                    59.34378
+                ],
+                [
+                    18.05345,
+                    59.3436
+                ],
+                [
+                    18.05342,
+                    59.34359
+                ],
+                [
+                    18.05329,
+                    59.34356
+                ],
+                [
+                    18.05323,
+                    59.34365
+                ],
+                [
+                    18.05273,
+                    59.34417
+                ],
+                [
+                    18.05267,
+                    59.34424
+                ],
+                [
+                    18.05191,
+                    59.34507
+                ],
+                [
+                    18.05202,
+                    59.34509
+                ],
+                [
+                    18.05176,
+                    59.34537
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": 446.5,
+                "duration": 91.6
+            },
+            "user": {
+                "id": 344,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQ0LCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzNTM0OCwiZXhwIjoxNzMyNDcxMzQ4fQ.rAo_tfczBSLSe3KhPOI2rutS-6IdFYKGOJrLEYPgisE"
+            },
+            "coords": [
+                [
+                    18.05176,
+                    59.34537
+                ],
+                [
+                    18.05202,
+                    59.34509
+                ],
+                [
+                    18.05191,
+                    59.34507
+                ],
+                [
+                    18.05267,
+                    59.34424
+                ],
+                [
+                    18.05273,
+                    59.34417
+                ],
+                [
+                    18.05289,
+                    59.34421
+                ],
+                [
+                    18.05368,
+                    59.34441
+                ],
+                [
+                    18.05464,
+                    59.34466
+                ],
+                [
+                    18.05473,
+                    59.34469
+                ],
+                [
+                    18.0548,
+                    59.3447
+                ],
+                [
+                    18.05494,
+                    59.34474
+                ],
+                [
+                    18.055,
+                    59.34476
+                ],
+                [
+                    18.05508,
+                    59.34478
+                ],
+                [
+                    18.05613,
+                    59.34505
+                ],
+                [
+                    18.05701,
+                    59.34527
+                ],
+                [
+                    18.05696,
+                    59.34532
+                ],
+                [
+                    18.05669,
+                    59.34525
+                ]
+            ]
+        }
+    ]
+}

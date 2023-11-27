@@ -24,7 +24,7 @@ class BatterySimulator(BatteryBase):
         level (float): representing battery level in %.
         level_reduction (float): how much to lower level for each update.
     """
-    def __init__(self, level=100, level_reduction=0.2):
+    def __init__(self, level=100, level_reduction=0.05):
         self._level = level
         self._level_reduction = level_reduction
 
