@@ -12,6 +12,7 @@ class TestBattery(unittest.TestCase):
         """ Creating a Battery and control level """
         battery = BatterySimulator()
         self.assertEqual(battery.level, 100, "Should be 100")
+        self.assertLess(battery.level, 100, "Should be less than 100")
 
     def test_create_with_argument(self):
         """ Creating a Battery with argument and control level """

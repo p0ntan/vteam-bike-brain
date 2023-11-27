@@ -52,8 +52,8 @@ class RouteHandler():
         max_length = max_speed_m_in_seconds * interval # max length between coordinates
 
         new_routes = self._routes.copy()
-        for key in new_routes.keys():
-            for i, trip in enumerate(new_routes[key]['trips']):
+        for bike_id in new_routes.keys():
+            for i, trip in enumerate(new_routes[bike_id]['trips']):
                 updated_cords = []
                 for j, coords in enumerate(trip['coords']):
                     try:
@@ -70,12 +70,12 @@ class RouteHandler():
                                 new_lat = round(coords[0] + lat_distance * multiply_by, 6)
                                 new_lng = round(coords[1] + lng_distance * multiply_by, 6)
                                 updated_cords.append([new_lat, new_lng])
-                        
+
                     except IndexError:
                         # Last point in array
                         pass
-                new_routes[key]['trips'][i]['coords'] = updated_cords
-    
+                new_routes[bike_id]['trips'][i]['coords'] = updated_cords
+
         return new_routes
 
     # def _add_coords(self):
