@@ -16,7 +16,7 @@ async def main():
     Gets simulation data from json-files and bike-data from server. 
     """
     # Here the interval can be changed for how often bikes should update it's position
-    interval_in_seconds = 2
+    interval_in_seconds = 5
     
     # Load routes with RouteHandler
     r_handler = RouteHandler('./routes', interval=interval_in_seconds)

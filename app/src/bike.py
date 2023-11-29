@@ -57,9 +57,9 @@ class Bike:
         """
         return {
             'id': self.id,
-            'status': self._status,
-            'battery_level': self._battery.level,
-            'position': self._gps.position,
+            'status_id': self._status,
+            'charge_perc': self._battery.level,
+            'coords': self._gps.position,
             'speed': self._gps.speed
         }
 
@@ -89,13 +89,9 @@ class Bike:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(self.API_URL, json=data, timeout=1.5) as response:
-                    if response.status == 200:
-                        print(await response.json())
-                        pass
-                    else:
+                    if response.status != 200:
                         print(f"Errorcode: {response.status}")
-            except asyncio.TimeoutError as error:
-                print("funkar ej")
+            except asyncio.TimeoutError:
                 pass
 
     def start(self):
