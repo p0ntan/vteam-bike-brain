@@ -4,18 +4,19 @@
 Main file for running simulation for all bikes in vteam-project.
 """
 import requests
+import asyncio
 
 from src.bikefactory import BikeFactory
 from src.routehandler import RouteHandler
 from src.sselistener import SSEListener
 
-def main():
+async def main():
     """ Main program to start up all bikes for simulation.
 
     Gets simulation data from json-files and bike-data from server. 
     """
     # Here the interval can be changed for how often bikes should update it's position
-    interval_in_seconds = 10
+    interval_in_seconds = 5
     
     # Load routes with RouteHandler
     r_handler = RouteHandler('./routes', interval=interval_in_seconds)
@@ -31,9 +32,15 @@ def main():
     # Add SSE-listener to each bike
     listeners = []
     sse_url = "http://express-server:1337/bikes/instructions"
+    tasks = []
     for bike in bike_factory.bikes:
-        listeners.append(SSEListener(bike, sse_url))
-        bike.start()
+        listener = SSEListener(bike, sse_url)
+        listeners.append(listener)
+        tasks.append(bike.start())
+
+    print("Running.")
+    
+    await asyncio.gather(*tasks)
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

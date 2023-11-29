@@ -28,6 +28,7 @@ class BikeFactory:
 
         for data_item in bike_data:
             bike_id = data_item['id']
+            simulation = None
 
             if bike_id in routes:
                 simulation = routes[bike_id]
