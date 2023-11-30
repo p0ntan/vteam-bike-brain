@@ -23,7 +23,7 @@ def start_sse(bikes, url):
     """ Function to start the SSEListener in an own thread and eventloop.
 
     Args:
-        bikes (list[Bike]): list of all the bikes to give instructions to
+        bikes (dict[Bike]): dict of all the bikes to give instructions to
         url (str): URL to get events from server
     """
     async def async_start():
