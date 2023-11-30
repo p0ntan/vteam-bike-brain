@@ -24,7 +24,7 @@ class BikeFactory:
         ):
         """ Initialize the bike and inject gps, battery and data """
 
-        self._bikes = []
+        self._bikes = {}
 
         for data_item in bike_data:
             bike_id = data_item['id']
@@ -37,9 +37,9 @@ class BikeFactory:
             battery_sim = BatterySimulator()
             new_bike = Bike(data_item, battery_sim, gps_sim, simulation, interval)
 
-            self._bikes.append(new_bike)
+            self._bikes[bike_id] = new_bike
 
     @property
     def bikes(self):
-        """ list[Bike]: list of all created bikes in factory """
+        """ dict[Bike]: dict of all created bikes in factory """
         return self._bikes
