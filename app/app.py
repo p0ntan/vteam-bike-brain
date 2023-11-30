@@ -19,11 +19,11 @@ async def main():
     interval_in_seconds = 5
     
     # Load routes with RouteHandler
-    r_handler = RouteHandler('./routes', interval=interval_in_seconds)
+    r_handler = RouteHandler('./test-routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
     # Get bike_data from server
-    response = requests.get('http://express-server:1337/get')
+    response = requests.get('http://express-server:1337/v1/get')
     bike_data = response.json()
 
     # Initialize bikes with BikeFactory
@@ -31,7 +31,7 @@ async def main():
 
     # Add SSE-listener to each bike
     listeners = []
-    sse_url = "http://express-server:1337/bikes/instructions"
+    sse_url = "http://express-server:1337/v1/bikes/instructions"
     tasks = []
     for bike in bike_factory.bikes:
         listener = SSEListener(bike, sse_url)
