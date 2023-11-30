@@ -65,7 +65,7 @@ class Bike:
         self._status = 1
 
     def unlock_bike(self):
-        """ Locks the bike by changing status to rented (2) """
+        """ Unlocks the bike by changing status to rented (2) """
         self._status = 2
 
     def get_data(self):
