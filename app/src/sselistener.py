@@ -4,7 +4,7 @@ SSE listener class
 """
 import asyncio
 import json
-import aiohttp
+from sseclient import SSEClient
 from src.bike import Bike
 
 class SSEListener:
@@ -16,35 +16,32 @@ class SSEListener:
         api_url (str): url to where the events is sent from server
     """
 
-    def __init__(self, bike_instance: Bike, api_url: str):
-        self._bike = bike_instance
+    def __init__(self, bikes: list[Bike], api_url: str):
+        self._bikes = bikes
         self._api_url = api_url
-        self._loop = asyncio.get_event_loop()
-        self._loop.create_task(self.listen())
 
-    async def listen(self):
-        """ Asynchronous method to start listening to events sent from server. """
-        async with aiohttp.ClientSession() as session:
-            async with session.get(self._api_url) as response:
-                async for line in response.content:
-                    if line:
-                        try:
-                            line = line.decode('utf-8').rstrip()
-                            json_str = line[6:]
-                            data = json.loads(json_str)
-                            await self._control_bike(data)
-                        except json.JSONDecodeError as error:
-                            print(f"Error with JSON-format: {error}")
-                        except Exception as error:
-                            print(f"Error in SSE connection: {error}")
+    def listen(self):
+        """ Start listening to events sent from server. """
+        try:
+            for event in SSEClient(self._api_url):
+                data = json.loads(event.data)
+                asyncio.run(self._control_bike(data))
+        # Disableing pylint to catch any error, might be a bit to wide but this needs
+        # to keep running for all possible errors for now.
+        # TODO find out possible errors and handle them accordingly
+        # pylint: disable=broad-exception-caught
+        except Exception as error:
+            print(f"Error in SSE connection: {error}")
 
     async def _control_bike(self, data: dict):
-        """ Async control the bike with actions setn from server.
+        """ Control the bike with actions setn from server.
         
         Args:
             data (dict): data to decide what to do with bike.
         """
-        if data['msg'] == 'start_simulation':
-            await self._bike.run_simulation()
-        elif data['id'] == self._bike.id():
-            print(await self._bike.get_data())
+        if 'msg' in data and data['msg'] == 'start_simulation':
+            tasks = [bike.run_simulation() for bike in self._bikes]
+            await asyncio.gather(*tasks)
+
+if __name__ == '__main__':
+    pass
