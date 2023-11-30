@@ -25,7 +25,7 @@ class Bike:
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
         self._status = data['status_id']
         self._city_id = data['city_id']
-        self._id = data['id']
+        self._id = data['id'] # TODO ska ändras till bike_id, bevhöer också ändras från server (se rest-arket)
         self._gps = gps
         self._battery = battery
         # self._city_zone = data['city_zone']
@@ -92,43 +92,50 @@ class Bike:
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
+        # Only run the simulation if the bike has one
         if self._simulation is None:
             return
 
         self._running_simulation = True
 
+        # Loop through each trip
         for trip in self._simulation['trips']:
-            url = self.API_URL + f"/trips/rent/{self.id}"
+            url = self.API_URL + f"/bikes/rent/{self.id}"
+            response_ok = False
 
             # headers and data is added for both renting and returning bike
             headers = {'x-access-token': trip ['user']['token']}
-            data = {'id': trip['user']['id']}
+            data = {'id': trip['user']['id'], 'bike_id': self.id}
 
             # Send a post-request to start renting the bike, if ok start simulation.
-            response = requests.post(url, json=data, headers=headers) # TODO ändra from request till aiohttp
-            if response.status_code == 200:
-                # Get trip_id from server
-                response_data = response.json()
-                trip_id = response_data['trip_id']
+            # TODO add error handling
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=data, headers=headers, timeout=5) as response:
+                    if response.status == 200:
+                        response_ok = True
+                        response_data = await response.json()
+                        trip_id = response_data['trip_id']
 
+            if response_ok:
                 # Start looping through the actual trip
                 for position in trip['coords']:
                     self._gps.position = (position, self._interval)
                     await self._update_bike_data(self.get_data())
                     await asyncio.sleep(self._interval)
-                
-                # Change for returning the bike and then return the bike.
-                url = self.API_URL + f"/trips/return/{trip_id}"
-                requests.put(url, json=data, headers=headers) # TODO ändra from request till aiohttp
+
+                # Change url for returning the bike and then return the bike with 
+                url = self.API_URL + f"/bikes/return/{trip_id}"
+                async with aiohttp.ClientSession() as session:
+                    async with session.put(url, json=data, headers=headers, timeout=5) as response:
+                        # TODO handle response if needed
+                        pass
 
         self._running_simulation = False
-
 
     async def _update_bike_data(self, data):
         """ Asynchronous method to send data to server """
         route = f"/bikes/{self.id}"
         url = self.API_URL + route
-
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.put(url, json=data, timeout=1.5) as response:
