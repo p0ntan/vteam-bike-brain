@@ -12,8 +12,17 @@ from src.routehandler import RouteHandler
 from src.sselistener import SSEListener
 
 def start_sse(bikes, url):
-    listener = SSEListener(bikes, url)
-    listener.listen()
+    """ Function to start the SSEListener in an own thread and eventloop.
+
+    Args:
+        bikes (list[Bike]): list of all the bikes to give instructions to
+        url (str): URL to get events from server
+    """
+    async def async_start():
+        listener = SSEListener(bikes, url)
+        await listener.listen()
+    
+    asyncio.run(async_start())
 
 async def main():
     """ Main program to start up all bikes for simulation.
@@ -21,10 +30,10 @@ async def main():
     Gets simulation data from json-files and bike-data from server. 
     """
     # Here the interval can be changed for how often bikes should update it's position
-    interval_in_seconds = 2
+    interval_in_seconds = 5
     
     # Load routes with RouteHandler
-    r_handler = RouteHandler('./routes', interval=interval_in_seconds)
+    r_handler = RouteHandler('./test-routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
     # Get bike_data from server
@@ -40,8 +49,10 @@ async def main():
     sse_thread.start()
 
     tasks = []
-    for bike in bike_factory.bikes:
+    for bike in bike_factory.bikes.values():
         tasks.append(bike.start())
+
+    print("Running")
 
     await asyncio.gather(*tasks)
 
