@@ -92,7 +92,7 @@ class Bike:
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
-        # Only run the simulation if the bike has one
+        # TODO lägg till or self._running_simulation = True så man inte kan starta flera simuleringar
         if self._simulation is None:
             return
 

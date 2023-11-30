@@ -58,5 +58,11 @@ class SSEListener:
                 case 'lock_bike':
                     bike.lock_bike()
 
+            # TODO ändra till något liknande
+            # method_name = 'lock_bike'
+            # method = getattr(bike, method_name, None)
+            # if method:
+            # method()
+
 if __name__ == '__main__':
     pass
