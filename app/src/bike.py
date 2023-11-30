@@ -5,7 +5,6 @@ Bike module
 
 import asyncio
 import aiohttp
-import requests
 from src.battery import BatteryBase
 from src.gps import GpsBase
 
