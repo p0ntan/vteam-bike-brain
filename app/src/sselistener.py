@@ -5,7 +5,6 @@ SSE listener class
 import asyncio
 import json
 from aiosseclient import aiosseclient
-from sseclient import SSEClient
 from src.bike import Bike
 
 class SSEListener:
