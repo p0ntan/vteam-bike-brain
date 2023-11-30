@@ -5,6 +5,7 @@ Bike module
 
 import asyncio
 import aiohttp
+import requests
 from src.battery import BatteryBase
 from src.gps import GpsBase
 
@@ -19,7 +20,7 @@ class Bike:
         simulation (dict=None): simulation data for bike, default is None
         interval (int=10): interval in seconds for the bike to send data to server, default is 10
     """
-    API_URL = 'http://express-server:1337/bikes/'
+    API_URL = 'http://express-server:1337/v1'
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
         self._status = data['status_id']
@@ -27,11 +28,12 @@ class Bike:
         self._id = data['id']
         self._gps = gps
         self._battery = battery
+        # self._city_zone = data['city_zone']
         self._interval = interval # interval in seconds when bike is moving
         self._simulation = simulation
         self._slow_interval = 30 # interval in seconds when bike stands still
 
-        # Bike needs to be started with metod start()
+        # Bike needs to be started with method start()
         self._running = False
         self._running_simulation = False
 
@@ -48,6 +50,23 @@ class Bike:
     @interval.setter
     def interval(self, interval):
         self._interval = interval
+    
+    @property
+    def status(self, status):
+        """ Set the status of the bike, intened to be used by admin/serviceworker.
+        
+        Args:
+            status (int): new status for the bike
+        """
+        self._status = status
+    
+    def lock_bike(self):
+        """ Locks the bike by changing status to avaliable (1) """
+        self._status = 1
+
+    def unlock_bike(self):
+        """ Locks the bike by changing status to rented (2) """
+        self._status = 2
 
     def get_data(self):
         """ Get data to send to server
@@ -79,16 +98,40 @@ class Bike:
         self._running_simulation = True
 
         for trip in self._simulation['trips']:
-            for position in trip['coords']:
-                self._gps.position = (position, self._interval)
-                await self._update_bike_data(self.get_data())
-                await asyncio.sleep(self._interval)
+            url = self.API_URL + f"/trips/rent/{self.id}"
+
+            # headers and data is added for both renting and returning bike
+            headers = {'x-access-token': trip ['user']['token']}
+            data = {'id': trip['user']['id']}
+
+            # Send a post-request to start renting the bike, if ok start simulation.
+            response = requests.post(url, json=data, headers=headers) # TODO ändra from request till aiohttp
+            if response.status_code == 200:
+                # Get trip_id from server
+                response_data = response.json()
+                trip_id = response_data['trip_id']
+
+                # Start looping through the actual trip
+                for position in trip['coords']:
+                    self._gps.position = (position, self._interval)
+                    await self._update_bike_data(self.get_data())
+                    await asyncio.sleep(self._interval)
+                
+                # Change for returning the bike and then return the bike.
+                url = self.API_URL + f"/trips/return/{trip_id}"
+                requests.put(url, json=data, headers=headers) # TODO ändra from request till aiohttp
+
+        self._running_simulation = False
+
 
     async def _update_bike_data(self, data):
         """ Asynchronous method to send data to server """
+        route = f"/bikes/{self.id}"
+        url = self.API_URL + route
+
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.post(self.API_URL, json=data, timeout=1.5) as response:
+                async with session.put(url, json=data, timeout=1.5) as response:
                     if response.status != 200:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:
