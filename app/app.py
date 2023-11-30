@@ -11,6 +11,14 @@ from src.bikefactory import BikeFactory
 from src.routehandler import RouteHandler
 from src.sselistener import SSEListener
 
+#
+# TODO lägg till alla länkar via os.env
+# TODO kolla igenom kommentarer så de stämmer med vad som görs i kod
+# TODO få bort match/case och använd något mer lämpligt
+# TODO va mer?
+#
+#
+
 def start_sse(bikes, url):
     """ Function to start the SSEListener in an own thread and eventloop.
 
