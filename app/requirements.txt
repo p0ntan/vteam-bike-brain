@@ -2,6 +2,7 @@ pylint
 requests
 asyncio
 aiohttp
+aiosseclient
 requests
 sseclient
 geopy
