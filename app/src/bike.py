@@ -49,16 +49,21 @@ class Bike:
     @interval.setter
     def interval(self, interval):
         self._interval = interval
-    
+
     @property
+    def status(self):
+        """ int: statuscode for the bike """
+        return self._status
+
+    @status.setter
     def status(self, status):
         """ Set the status of the bike, intened to be used by admin/serviceworker.
-        
+
         Args:
             status (int): new status for the bike
         """
         self._status = status
-    
+
     def lock_bike(self):
         """ Locks the bike by changing status to avaliable (1) """
         self._status = 1
@@ -99,7 +104,7 @@ class Bike:
 
         # Loop through each trip
         for trip in self._simulation['trips']:
-            url = self.API_URL + f"/bikes/rent/{self.id}"
+            req_url = self.API_URL + f"/bikes/rent/{self.id}"
             response_ok = False
 
             # headers and data is added for both renting and returning bike
@@ -109,7 +114,7 @@ class Bike:
             # Send a post-request to start renting the bike, if ok start simulation.
             # TODO add error handling
             async with aiohttp.ClientSession() as session:
-                async with session.post(url, json=data, headers=headers, timeout=5) as response:
+                async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
                     if response.status == 200:
                         response_ok = True
                         response_data = await response.json()
@@ -122,10 +127,10 @@ class Bike:
                     await self._update_bike_data(self.get_data())
                     await asyncio.sleep(self._interval)
 
-                # Change url for returning the bike and then return the bike with 
-                url = self.API_URL + f"/bikes/return/{trip_id}"
+                # Change url for returning the bike and then return the bike with
+                req_url = self.API_URL + f"/bikes/return/{trip_id}"
                 async with aiohttp.ClientSession() as session:
-                    async with session.put(url, json=data, headers=headers, timeout=5) as response:
+                    async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
                         # TODO handle response if needed
                         pass
 
@@ -134,10 +139,10 @@ class Bike:
     async def _update_bike_data(self, data):
         """ Asynchronous method to send data to server """
         route = f"/bikes/{self.id}"
-        url = self.API_URL + route
+        req_url = self.API_URL + route
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(url, json=data, timeout=1.5) as response:
+                async with session.put(req_url, json=data, timeout=1.5) as response:
                     if response.status != 200:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:

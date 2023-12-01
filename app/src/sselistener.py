@@ -6,6 +6,7 @@ import asyncio
 import json
 from aiosseclient import aiosseclient
 from src.bike import Bike
+# TODO kolla upp https://github.com/JelleZijlstra/aiohttp-sse-client2
 
 class SSEListener:
     """ Class for listening to events sent from server. Can control one or more bikes.
@@ -41,7 +42,7 @@ class SSEListener:
         """
         if 'instruction_all' in data:
             instruction = data['instruction_all']
-    
+
             match instruction:
                 case 'run_simulation':
                     for bike in self._bikes.values():
@@ -62,6 +63,3 @@ class SSEListener:
             # method = getattr(bike, method_name, None)
             # if method:
             # method()
-
-if __name__ == '__main__':
-    pass
