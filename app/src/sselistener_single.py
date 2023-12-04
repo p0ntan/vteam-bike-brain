@@ -36,7 +36,7 @@ class SSEListener:
             except Exception as error:
                 print(f"Error in SSE connection: {error}")
                 reconnection_attempts += 1
-                asyncio.sleep(5)
+                await asyncio.sleep(5)
 
     async def _control_bike(self, data: dict):
         """ Control the bike with actions setn from server.
