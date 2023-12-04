@@ -30,7 +30,7 @@ class Bike:
         # self._city_zone = data['city_zone']
         self._interval = interval # interval in seconds when bike is moving
         self._simulation = simulation
-        self._slow_interval = 30 # interval in seconds when bike stands still
+        self._slow_interval = 10 # interval in seconds when bike stands still
 
         # Bike needs to be started with method start()
         self._running = False
