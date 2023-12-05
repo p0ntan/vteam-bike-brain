@@ -48,15 +48,10 @@ class SSEListener:
         """
         if 'instruction_all' in data:
             instruction = data['instruction_all']
+            action = getattr(self._bike, instruction)
+            asyncio.create_task(action())
 
-            match instruction:
-                case 'run_simulation':
-                    asyncio.create_task(self._bike.run_simulation())
         elif 'bike_id' in data and int(data['bike_id']) == self._bike.id:
             instruction = data['instruction']
-
-            match instruction:
-                case 'unlock_bike':
-                    self._bike.unlock_bike()
-                case 'lock_bike':
-                    self._bike.lock_bike()
+            action = getattr(self._bike, instruction)
+            action()
