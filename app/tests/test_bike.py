@@ -33,7 +33,7 @@ class TestBike(unittest.TestCase):
         self.assertIsInstance(data_from_bike['status_id'], int, "Should be an integer")
         # charge_perc
         self.assertIn('charge_perc', data_from_bike, "Should have key charge_perc")
-        self.assertIsInstance(data_from_bike['charge_perc'], int, "Should be an integer")
+        self.assertIsInstance(data_from_bike['charge_perc'], float, "Should be a float")
         # coords
         self.assertIn('coords', data_from_bike, "Should have key coords")
         self.assertIsInstance(data_from_bike['coords'], list, "Should be a list")

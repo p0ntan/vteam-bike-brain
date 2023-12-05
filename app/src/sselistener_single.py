@@ -31,7 +31,8 @@ class SSEListener:
                     asyncio.create_task(self._control_bike(data))
             # Disableing pylint to catch any error, might be a bit to wide but this needs
             # to keep running for all possible errors for now.
-            # TODO find out possible errors and handle them accordingly. Control that running it again is a valid approach.
+            # TODO find out possible errors and handle them accordingly.
+            # Control that running it again is a valid approach.
             # pylint: disable=broad-exception-caught
             except Exception as error:
                 print(f"Error in SSE connection: {error}")

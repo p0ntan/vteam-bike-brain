@@ -81,7 +81,7 @@ class Bike:
         return {
             'id': self.id,
             'status_id': self._status,
-            'charge_perc': self._battery.level,
+            'charge_perc': round(self._battery.level, 2),
             'coords': self._gps.position,
             'speed': self._gps.speed
         }
