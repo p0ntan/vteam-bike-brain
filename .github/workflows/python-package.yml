@@ -13,6 +13,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      API_URL: http://express-server:1337/v1
     strategy:
       fail-fast: false
       matrix:

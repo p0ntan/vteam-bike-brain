@@ -7,6 +7,7 @@ from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
 
+
 class BikeFactory:
     """ Class for creating a bike, aka bike-factory.
 
@@ -20,8 +21,8 @@ class BikeFactory:
             self,
             bike_data: dict,
             routes: dict,
-            interval: int=10
-        ):
+            interval: int = 10
+            ):
         """ Initialize the bike and inject gps, battery and data """
 
         self._bikes = {}

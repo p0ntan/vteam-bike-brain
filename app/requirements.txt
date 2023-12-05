@@ -3,7 +3,7 @@ requests
 asyncio
 aiohttp
 aiosseclient
-requests
 sseclient
 geopy
 coverage
+flake8

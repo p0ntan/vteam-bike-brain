@@ -5,6 +5,7 @@ GPS-module
 from abc import ABC, abstractmethod
 from geopy.distance import lonlat, distance
 
+
 class GpsBase(ABC):
     """ Abstract class GpsBase.
 
@@ -15,18 +16,19 @@ class GpsBase(ABC):
     @property
     @abstractmethod
     def position(self):
-        """ list[float]: position in [latitude, longitude] """
+        """ list[float]: position in [longitude, latitude] """
 
     @property
     @abstractmethod
     def speed(self):
         """ int: speed for the bike in km/h """
 
+
 class GpsSimulator(GpsBase):
     """" The gps-class used in the simulation
 
     Args:
-        position (list[float]): the position in [latitude, longitude]    
+        position (list[float]): the position in [longitude, latitude]
     """
 
     def __init__(self, position: list):
@@ -35,13 +37,13 @@ class GpsSimulator(GpsBase):
 
     @property
     def position(self):
-        """ list[float]: position in [latitude, longitude] """
+        """ list[float]: position in [longitude, latitude] """
         return self._position
 
     @position.setter
     def position(self, new_data: tuple):
         """ new_data includes new position and time
-        
+
         Args:
             new_data (tuple[list, int]): position and elapsed time
         """

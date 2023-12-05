@@ -9,5 +9,6 @@ services:
       - "./app/:/bike/app"
     environment:
       - PYTHONDONTWRITEBYTECODE=1
+      - API_URL=http://express-server:1337/v1
     restart:
       "on-failure"
