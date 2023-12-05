@@ -42,17 +42,12 @@ class SSEListener:
         if 'instruction_all' in data:
             instruction = data['instruction_all']
 
-            match instruction:
-                case 'run_simulation':
-                    for bike in self._bikes.values():
-                        asyncio.create_task(bike.run_simulation())
+            for bike in self._bikes.values():
+                action = getattr(bike, instruction)
+                asyncio.create_task(action())
         elif 'bike_id' in data:
             instruction = data['instruction']
             bike_id = int(data['bike_id'])
             bike = self._bikes[bike_id]
-
-            match instruction:
-                case 'unlock_bike':
-                    bike.unlock_bike()
-                case 'lock_bike':
-                    bike.lock_bike()
+            action = getattr(bike, instruction)
+            action()
