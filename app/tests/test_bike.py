@@ -7,6 +7,7 @@ from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
 
+
 class TestBike(unittest.TestCase):
     """ Testclass for testing class Bike """
     BIKE_DATA = {
@@ -53,7 +54,7 @@ class TestBike(unittest.TestCase):
         self.assertEqual(data_from_bike['speed'], 0, "Should be 0")
         self.assertEqual(data_from_bike['coords'], self.BIKE_DATA['coords'], "Should be an list of coordinates")
 
-        new_position = [13.505173887431198, 59.38216072603788] # 200 meters between this and original position
+        new_position = [13.505173887431198, 59.38216072603788]  # 200 meters between this and original position
         interval_in_seconds = 10
 
         # Forcing new position on private variable, disableing pylint for this action
@@ -61,5 +62,5 @@ class TestBike(unittest.TestCase):
         bike_instance._gps.position = (new_position, interval_in_seconds)
         data_from_bike = bike_instance.get_data()
 
-        self.assertEqual(data_from_bike['speed'], 72, "Should be 72") # 200 meters in 10 sek = 72 km/h
+        self.assertEqual(data_from_bike['speed'], 72, "Should be 72")  # 200 meters in 10 sek = 72 km/h
         self.assertEqual(data_from_bike['coords'], new_position, "Should be an list of coordinates")

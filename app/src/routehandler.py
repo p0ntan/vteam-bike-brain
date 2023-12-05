@@ -7,14 +7,15 @@ import json
 import math
 from geopy.distance import lonlat, distance
 
+
 class RouteHandler():
     """ A class for handling routes used for simulation
-    
+
     Args:
         directory (str): the directory to load the routes from. Should contain .json-files.
         interval (int): the number of seconds each interval will be, decides max-length for coords-distance
     """
-    def __init__(self, directory: str, interval: int=10):
+    def __init__(self, directory: str, interval: int = 10):
         """ Constructor """
         self._interval = interval
         self._routes = self._load_routes(directory)
@@ -26,21 +27,21 @@ class RouteHandler():
         return self._routes
 
     def _load_routes(self, directory: str):
-        """ Method to load routes from the directory. Can be used to add extra controls. 
-        
+        """ Method to load routes from the directory. Can be used to add extra controls.
+
         Args:
             directory (str): the directory to load the routes from. Should contain .json-files.
-        
+
         Returns:
             dict[mixed]: data to use for simulations.
         """
         routes = {}
         for filename in os.listdir(directory):
             if filename.endswith('.json'):
-                bike_id = int(filename[:-5]) # Remove .json
+                bike_id = int(filename[:-5])  # Remove .json
                 filepath = os.path.join(directory, filename)
                 with open(filepath, 'r', encoding="UTF-8") as file:
-                    routes[bike_id] = json.load(file) # Save into dict with filename as key (id)
+                    routes[bike_id] = json.load(file)  # Save into dict with filename as key (id)
         return routes
 
     def _check_distance(self):
@@ -75,17 +76,17 @@ class RouteHandler():
                 pass  # Last point in array
         return updated_cords
 
-    def _add_extra_points(self, start_point: list, end_point: list, distance: float, max_length: float):
-        """ Adds extra points between two coordinates if the distance is too long. 
-        
+    def _add_extra_points(self, start_point: list, end_point: list, coords_distance: float, max_length: float):
+        """ Adds extra points between two coordinates if the distance is too long.
+
         Args:
             start_point (list): coordinates for the first point
             end_point (list): coordinates for the second point
-            distance (float): distance between points in meters
+            coords_distance (float): distance between points in meters
             max_length (float): max length between two points (coords)
         """
         extra_points = []
-        split_by = math.ceil(distance / max_length)
+        split_by = math.ceil(coords_distance / max_length)
         lng_distance = (end_point[0] - start_point[0]) / split_by
         lat_distance = (end_point[1] - start_point[1]) / split_by
 

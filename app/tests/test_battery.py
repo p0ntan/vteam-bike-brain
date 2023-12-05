@@ -5,6 +5,7 @@
 import unittest
 from src.battery import BatterySimulator
 
+
 class TestBattery(unittest.TestCase):
     """ Testclass for testing class BatterySimulator """
 

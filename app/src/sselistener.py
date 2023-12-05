@@ -6,7 +6,7 @@ import asyncio
 import json
 from aiosseclient import aiosseclient
 from src.bike import Bike
-# TODO kolla upp https://github.com/JelleZijlstra/aiohttp-sse-client2
+
 
 class SSEListener:
     """ Class for listening to events, used for each bike.
@@ -25,7 +25,7 @@ class SSEListener:
         """ Start listening to events sent from server. """
         headers = {'bike_id': str(self._bike.id)}
         reconnection_attempts = 0
-        while reconnection_attempts <= 5:
+        while True:
             try:
                 async for event in aiosseclient(self._api_url, headers=headers):
                     data = json.loads(event.data)
@@ -38,11 +38,11 @@ class SSEListener:
             except Exception as error:
                 print(f"Error in SSE connection: {error}")
                 reconnection_attempts += 1
-                await asyncio.sleep(5)
+                await asyncio.sleep(reconnection_attempts)
 
     async def _control_bike(self, data: dict):
         """ Control the bike with actions setn from server.
-        
+
         Args:
             data (dict): data to decide what to do with bike.
         """

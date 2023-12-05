@@ -5,6 +5,7 @@ Battery module
 
 from abc import ABC, abstractmethod
 
+
 class BatteryBase(ABC):
     """ Abstract class BatteryBase.
 
@@ -17,6 +18,7 @@ class BatteryBase(ABC):
     def level(self):
         """ float: the lever for the battery """
 
+
 class BatterySimulator(BatteryBase):
     """ The battery-class used in the simulation.
 
@@ -24,7 +26,7 @@ class BatterySimulator(BatteryBase):
         level (float): representing battery level (1 = 100 %).
         level_reduction (float): how much to lower level for each update.
     """
-    def __init__(self, level: float=1.00, level_reduction: float=0.001):
+    def __init__(self, level: float = 1.00, level_reduction: float = 0.001):
         self._level = level
         self._level_reduction = level_reduction
 

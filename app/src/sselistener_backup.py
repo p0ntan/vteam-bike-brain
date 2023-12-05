@@ -7,6 +7,7 @@ import json
 from aiosseclient import aiosseclient
 from src.bike import Bike
 
+
 class SSEListener:
     """ Class for listening to events sent from server. Can control one or more bikes.
     The listener is giving instructions to the bike based on events from server.
@@ -34,7 +35,7 @@ class SSEListener:
 
     async def _control_bike(self, data: dict):
         """ Control the bike with actions setn from server.
-        
+
         Args:
             data (dict): data to decide what to do with bike.
         """

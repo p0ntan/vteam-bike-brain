@@ -5,6 +5,7 @@
 import unittest
 from src.gps import GpsSimulator
 
+
 class TestGps(unittest.TestCase):
     """ Testclass for testing class GpsSimulator """
 

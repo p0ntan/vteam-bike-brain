@@ -8,6 +8,7 @@ import aiohttp
 from src.battery import BatteryBase
 from src.gps import GpsBase
 
+
 class Bike:
     """
     Class that represents the bike and it's brain (functionality)
@@ -21,16 +22,16 @@ class Bike:
     """
     API_URL = os.environ['API_URL']
 
-    def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
+    def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
         self._status = data['status_id']
         self._city_id = data['city_id']
         self._id = data['id']
         self._gps = gps
         self._battery = battery
         # self._city_zone = data['city_zone']
-        self._interval = interval # interval in seconds when bike is moving
+        self._interval = interval  # interval in seconds when bike is moving
         self._simulation = simulation
-        self._slow_interval = 30 # interval in seconds when bike stands still
+        self._slow_interval = 30  # interval in seconds when bike stands still
 
         # Bike needs to be started with method start()
         self._running = False
@@ -74,7 +75,7 @@ class Bike:
 
     def get_data(self):
         """ Get data to send to server
-        
+
         Returns:
             dict: with data needed for the server
         """
@@ -107,7 +108,7 @@ class Bike:
             response_ok = False
 
             # headers and data is added for both renting and returning bike
-            headers = {'x-access-token': trip ['user']['token']}
+            headers = {'x-access-token': trip['user']['token']}
             data = {'id': trip['user']['id'], 'bike_id': self.id}
 
             # Send a post-request to start renting the bike, if ok start simulation.
