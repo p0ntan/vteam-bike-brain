@@ -63,13 +63,13 @@ class RouteHandler():
                         extra_points_needed = coords_distance / max_length # If more than 1 distance is too long
                         if extra_points_needed > 1:
                             split_by = math.ceil(extra_points_needed)
-                            lat_distance = (trip['coords'][j+1][0] - coords[0]) / split_by
-                            lng_distance = (trip['coords'][j+1][1] - coords[1]) / split_by
+                            lng_distance = (trip['coords'][j+1][0] - coords[0]) / split_by
+                            lat_distance = (trip['coords'][j+1][1] - coords[1]) / split_by
 
                             for multiply_by in range(1, split_by):
-                                new_lat = round(coords[0] + lat_distance * multiply_by, 6)
-                                new_lng = round(coords[1] + lng_distance * multiply_by, 6)
-                                updated_cords.append([new_lat, new_lng])
+                                new_lng = round(coords[0] + lng_distance * multiply_by, 6)
+                                new_lat = round(coords[1] + lat_distance * multiply_by, 6)
+                                updated_cords.append([new_lng, new_lat])
 
                     except IndexError:
                         # Last point in array
