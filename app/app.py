@@ -13,7 +13,7 @@ from src.routehandler import RouteHandler
 from src.sselistener import SSEListener
 
 #
-# TODO kolla igenom kommentarer så de stämmer med vad som görs i kod
+# TODO kolla igenom kommentarer så de stämmer med vad som görs i kod, lägg till typer
 # TODO få bort match/case och använd något mer lämpligt
 # TODO va mer?
 # TODO se till att programmet inte stoppar när den tappar kontakt med servern.
