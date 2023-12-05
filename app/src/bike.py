@@ -2,7 +2,7 @@
 """
 Bike module
 """
-
+import os
 import asyncio
 import aiohttp
 from src.battery import BatteryBase
@@ -19,7 +19,7 @@ class Bike:
         simulation (dict=None): simulation data for bike, default is None
         interval (int=10): interval in seconds for the bike to send data to server, default is 10
     """
-    API_URL = 'http://express-server:1337/v1'
+    API_URL = os.environ['API_URL']
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
         self._status = data['status_id']

@@ -3,13 +3,14 @@
 """
 Main file for running simulation for all bikes in vteam-project.
 """
+import os
 import requests
 import asyncio
 import threading
 
 from src.bikefactory import BikeFactory
 from src.routehandler import RouteHandler
-from src.sselistener_single import SSEListener
+from src.sselistener import SSEListener
 
 #
 # TODO lägg till alla länkar via os.env
@@ -44,12 +45,15 @@ async def main():
     # Here the interval can be changed for how often bikes should update it's position
     interval_in_seconds = 10
 
+    # API-URL
+    base_url = os.environ['API_URL']
+
     # Load routes with RouteHandler
     r_handler = RouteHandler('./routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
     # Get bike_data from server
-    response = requests.get('http://express-server:1337/v1/get')
+    response = requests.get(f"{base_url}/get")
     bike_data = response.json()
 
     # Initialize bikes with BikeFactory
@@ -61,7 +65,7 @@ async def main():
         tasks.append(bike.start())
     
     # Start SSE:s in it's own thread
-    sse_url = "http://express-server:1337/v1/bikes/instructions"
+    sse_url = f"{base_url}/bikes/instructions"
     sse_thread = threading.Thread(target=start_sse, args=(bike_factory.bikes, sse_url))
     sse_thread.start()
 
