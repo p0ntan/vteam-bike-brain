@@ -43,42 +43,6 @@ class RouteHandler():
                     routes[bike_id] = json.load(file) # Save into dict with filename as key (id)
         return routes
 
-    # def check_distance(self, interval):
-    #     """ Checks distance between coordiantes and adds more if needed
-        
-    #     Args:
-    #         interval (int): what interval to use for simulation in seconds    
-    #     """
-    #     max_speed_m_in_seconds = 5.5 # just under 20 km/h (19.8)
-    #     max_length = max_speed_m_in_seconds * interval # max length between coordinates
-
-    #     new_routes = self._routes.copy()
-    #     for bike_id in new_routes.keys():
-    #         for i, trip in enumerate(new_routes[bike_id]['trips']):
-    #             updated_cords = []
-    #             for j, coords in enumerate(trip['coords']):
-    #                 try:
-    #                     updated_cords.append(coords)
-    #                     next_point = [trip['coords'][j+1][0], trip['coords'][j+1][1]]
-    #                     coords_distance = distance(lonlat(*coords), lonlat(*next_point)).meters
-    #                     extra_points_needed = coords_distance / max_length # If more than 1 distance is too long
-    #                     if extra_points_needed > 1:
-    #                         split_by = math.ceil(extra_points_needed)
-    #                         lng_distance = (trip['coords'][j+1][0] - coords[0]) / split_by
-    #                         lat_distance = (trip['coords'][j+1][1] - coords[1]) / split_by
-
-    #                         for multiply_by in range(1, split_by):
-    #                             new_lng = round(coords[0] + lng_distance * multiply_by, 6)
-    #                             new_lat = round(coords[1] + lat_distance * multiply_by, 6)
-    #                             updated_cords.append([new_lng, new_lat])
-
-    #                 except IndexError:
-    #                     # Last point in array
-    #                     pass
-    #             new_routes[bike_id]['trips'][i]['coords'] = updated_cords
-
-    #     return new_routes
-
     def _check_distance(self):
         """ Main method to check and adjust the distance between coordinates in routes. """
         max_speed_m_in_seconds = 5.5  # just under 20 km/h (19.8)
