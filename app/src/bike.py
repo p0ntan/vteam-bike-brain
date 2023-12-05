@@ -24,7 +24,7 @@ class Bike:
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict=None, interval: int=10):
         self._status = data['status_id']
         self._city_id = data['city_id']
-        self._id = data['id'] # TODO ska ändras till bike_id, bevhöer också ändras från server (se rest-arket)
+        self._id = data['id']
         self._gps = gps
         self._battery = battery
         # self._city_zone = data['city_zone']
@@ -96,8 +96,7 @@ class Bike:
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
-        # TODO lägg till or self._running_simulation = True så man inte kan starta flera simuleringar
-        if self._simulation is None:
+        if self._simulation is None or self._running_simulation:
             return
 
         self._running_simulation = True
