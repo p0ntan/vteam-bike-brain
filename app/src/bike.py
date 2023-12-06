@@ -21,6 +21,7 @@ class Bike:
         interval (int=10): interval in seconds for the bike to send data to server, default is 10
     """
     API_URL = os.environ['API_URL']
+    SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
         self._active = True if data.get('active', 1) == 1 else False
@@ -31,9 +32,11 @@ class Bike:
         self._battery = battery
         self._city_zone = data.get('city_zone', {})
         self._speed_limit = 20  # TODO change into something more useful
-        self._interval = interval  # interval in seconds when bike is moving
         self._simulation = simulation
-        self._slow_interval = 30  # interval in seconds when bike stands still
+
+        # Intervals in bike, _used_interval is the one that is used in loops
+        self._used_interval = self.SLOW_INTERVAL  # interval that is used in loops, is changing when bike is running.
+        self._interval = interval  # interval in seconds when bike is moving
 
         # Bike needs to be started with method start()
         self._running = False
@@ -64,8 +67,11 @@ class Bike:
         Args:
             status (int): new status for the bike
         """
+        # self._used_interval = self.SLOW_INTERVAL
         if status == 1 and self._battery.needs_charging():  # Control to not set the status to 1
             status = 3  # 3 is the status for maintenance required
+        elif status == 2:
+            self._used_interval = self._interval
         self._status = status
 
     def lock_bike(self):
@@ -104,7 +110,7 @@ class Bike:
                 data = self.get_data()
 
                 await self._update_bike_data(data)
-            await asyncio.sleep(self._slow_interval)  # FIXME this works for simulation but not for real bike.
+            await asyncio.sleep(self._used_interval)
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
