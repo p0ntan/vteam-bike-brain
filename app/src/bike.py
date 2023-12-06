@@ -23,12 +23,13 @@ class Bike:
     API_URL = os.environ['API_URL']
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._status = data['status_id']
-        self._city_id = data['city_id']
-        self._id = data['id']
+        self._active = True if data.get('active', 1) == 1 else False
+        self._status = data.get('status_id')
+        self._city_id = data.get('city_id')
+        self._id = data.get('id')
         self._gps = gps
         self._battery = battery
-        # self._city_zone = data['city_zone']
+        self._city_zone = data.get('city_zone', {})
         self._interval = interval  # interval in seconds when bike is moving
         self._simulation = simulation
         self._slow_interval = 30  # interval in seconds when bike stands still
@@ -56,9 +57,8 @@ class Bike:
         """ int: statuscode for the bike """
         return self._status
 
-    @status.setter
-    def status(self, status):
-        """ Set the status of the bike, intened to be used by admin/serviceworker.
+    def set_status(self, status: int):
+        """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
 
         Args:
             status (int): new status for the bike
@@ -66,12 +66,12 @@ class Bike:
         self._status = status
 
     def lock_bike(self):
-        """ Locks the bike by changing status to avaliable (1) """
-        self._status = 1
+        """ Locks the bike by changing active to False """
+        self._active = False
 
     def unlock_bike(self):
-        """ Unlocks the bike by changing status to rented (2) """
-        self._status = 2
+        """ Unlocks the bike by changing active to True """
+        self._active = True
 
     def get_data(self):
         """ Get data to send to server
@@ -149,7 +149,11 @@ class Bike:
                 pass
 
     def start(self):
-        """ Start the bikes program """
+        """ Start the bikes program
+        
+        Returns:
+            self._run_bike(): Task to run by the SSE-listener
+        """
         self._running = True
         return self._run_bike()
 
