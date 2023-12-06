@@ -8,3 +8,4 @@ geopy
 coverage
 flake8
 pytest
+pytest-asyncio
