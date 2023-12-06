@@ -30,6 +30,7 @@ class Bike:
         self._gps = gps
         self._battery = battery
         self._city_zone = data.get('city_zone', {})
+        self._speed_limit = 20  # TODO change into something more useful
         self._interval = interval  # interval in seconds when bike is moving
         self._simulation = simulation
         self._slow_interval = 30  # interval in seconds when bike stands still
@@ -63,15 +64,22 @@ class Bike:
         Args:
             status (int): new status for the bike
         """
+        if status == 1 and self._battery.needs_charging():  # Control to not set the status to 1
+            status = 3  # 3 is the status for maintenance required
         self._status = status
 
     def lock_bike(self):
-        """ Locks the bike by changing active to False """
+        """ Locks the bike by changing active to False and sets speed limit to zero """
+        self._speed_limit = 0
         self._active = False
 
     def unlock_bike(self):
         """ Unlocks the bike by changing active to True """
         self._active = True
+
+    def set_speed_limit(self):
+        """ Sets the speedlimit for the bike, based on position. """
+        self._speed_limit = 20  # TODO add logic for speedlimit
 
     def get_data(self):
         """ Get data to send to server
@@ -91,9 +99,12 @@ class Bike:
         """ The asynchronous loop in the bike when program is running. """
         while self._running:
             if not self._running_simulation:
+                if self._battery.needs_charging():
+                    self.set_status(3)  # 3 is the status for maintenance required
                 data = self.get_data()
+
                 await self._update_bike_data(data)
-            await asyncio.sleep(self._slow_interval)
+            await asyncio.sleep(self._slow_interval)  # FIXME this works for simulation but not for real bike.
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
