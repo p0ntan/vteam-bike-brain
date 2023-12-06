@@ -46,12 +46,14 @@ class SSEListener:
         Args:
             data (dict): data to decide what to do with bike.
         """
-        if 'instruction_all' in data:
-            instruction = data['instruction_all']
-            action = getattr(self._bike, instruction)
-            asyncio.create_task(action())
+        args = data.get('args', [])
 
-        elif 'bike_id' in data and int(data['bike_id']) == self._bike.id:
-            instruction = data['instruction']
+        if 'instruction_all' in data:
+            instruction = data.get('instruction_all')
             action = getattr(self._bike, instruction)
-            action()
+            asyncio.create_task(action(*args))
+
+        elif 'bike_id' in data and int(data.get('bike_id')) == self._bike.id:
+            instruction = data.get('instruction')
+            action = getattr(self._bike, instruction)
+            action(*args)
