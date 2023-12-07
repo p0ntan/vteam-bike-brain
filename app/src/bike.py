@@ -18,13 +18,13 @@ class Bike:
         battery (BatteryBase): the battery used in the bike
         gps (GpsBase): the gps for the bike, used for position and speed
         simulation (dict=None): simulation data for bike, default is None
-        interval (int=10): interval in seconds for the bike to send data to server, default is 10
+        interval (int=10): interval in seconds for the bike to send data to server when moving, default is 10
     """
     API_URL = os.environ.get('API_URL', '')
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._active = 1 == data.get('active', 1)  # True if active is 1
+        self._active = data.get('active', 1) == 1  # True if active is 1
         self._status = data.get('status_id')
         self._city_id = data.get('city_id')
         self._id = data.get('id')
@@ -86,10 +86,17 @@ class Bike:
     def unlock_bike(self):
         """ Unlocks the bike by changing active to True """
         self._active = True
+        self._update_speed_limit()
 
-    def set_speed_limit(self):
-        """ Sets the speedlimit for the bike, based on position. """
-        self._speed_limit = 20  # TODO add logic for speedlimit
+    def _update_speed_limit(self):
+        """ Updates the speedlimit for the bike. """
+        # Only update speedlimit if bike is active/unlocked.
+        if self._active:
+            self._speed_limit = self._get_speed_limit()
+
+    def _get_speed_limit(self):
+        """ Gets the speedlimit, based on position. """
+        return 20  # TODO add logic for speedlimit
 
     def get_data(self):
         """ Get data to send to server
@@ -107,16 +114,28 @@ class Bike:
 
     async def _run_bike(self):
         """ The asynchronous loop in the bike when program is running. """
+        # loop_interval is number of seconds between each loop
+        loop_interval = 2
+        # count controls each loop iteration. Will be set to same as interval for first loop
+        # to send data at first iteration.
+        count = self._interval
         while self._running:
             # This is needed to hold loop if an simulation is running.
             await self._simulation_event_off.wait()
 
             if self._battery.needs_charging():
                 self.set_status(3)  # 3 is the status for maintenance required
-            data = self.get_data()
 
-            await self._update_bike_data(data)
-            await asyncio.sleep(self._interval)
+            self._update_speed_limit()
+
+            # When count is same as interval, send data to server.
+            if count == self._interval:
+                data = self.get_data()
+                await self._update_bike_data(data)
+                count = 0
+
+            await asyncio.sleep(loop_interval)
+            count += loop_interval
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
@@ -161,8 +180,12 @@ class Bike:
         # Simulation is over, set _simulation_event_off to True
         self._simulation_event_off.set()
 
-    async def _update_bike_data(self, data):
-        """ Asynchronous method to send data to server """
+    async def _update_bike_data(self, data: dict):
+        """ Asynchronous method to send data to server.
+
+        Args:
+            data (dict): data to send to server
+        """
         route = f"/bikes/{self.id}"
         req_url = self.API_URL + route
         async with aiohttp.ClientSession() as session:

@@ -3,8 +3,8 @@
 """ Module for testing the class Bike """
 
 import asyncio
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+import pytest
 from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
@@ -48,7 +48,7 @@ def test_create_bike():
 
 def test_moving_bike():
     """ Update position for a bike, see that it sends out speed and new position """
-    gps_sim = GpsSimulator(bike_data['coords'])  # Could be mocked, but it takes away the purpose of the test
+    gps_sim = GpsSimulator(bike_data.get('coords'))  # Could be mocked, but it takes away the purpose of the test
     battery_sim = MagicMock()
     bike_instance = Bike(bike_data, battery_sim, gps_sim)
 
@@ -80,7 +80,6 @@ async def test_start_bike_low_battery():
     # Mock methods to isolate test
     # pylint: disable=protected-access
     bike._update_bike_data = AsyncMock()
-    bike._interval = 2
     bike._running = True
 
     async def stop_bike_after_5_seconds():
@@ -102,7 +101,7 @@ async def test_start_bike_low_battery():
     assert bike.status == 3
 
 
-def test_change_status_when_low_battery():
+def test_change_status_low_battery():
     """ Trying to change status when battery i low. """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
@@ -116,3 +115,32 @@ def test_change_status_when_low_battery():
 
     bike.set_status(1)  # Should stay at 3 since low battery
     assert bike.status == 3
+
+
+def test_lock_unlock_bike():
+    """ Trying to lock and unlock bike. """
+    gps_sim = MagicMock()
+    battery_sim = MagicMock()
+    bike = Bike(bike_data, battery_sim, gps_sim)
+    bike._get_speed_limit = MagicMock(return_value=20)
+
+    assert bike._active is True
+
+    bike.lock_bike()
+
+    # pylint: disable=protected-access
+    assert bike._active is False
+    assert bike._speed_limit == 0
+
+    bike.unlock_bike()
+
+    # pylint: disable=protected-access
+    assert bike._active is True
+    assert bike._speed_limit == 20
+
+
+def test_bike_outside_city_limits():
+    """ Trying to lock bike. """
+    gps_sim = MagicMock()
+    battery_sim = MagicMock()
+    bike = Bike(bike_data, battery_sim, gps_sim)
