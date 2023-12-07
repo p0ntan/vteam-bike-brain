@@ -26,7 +26,8 @@ class Bike:
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
         self._active = data.get('active', 1) == 1  # True if active is 1
         self._status = data.get('status_id')
-        self._city_id = data.get('city_id')
+        # TODO city_id needed?
+        # self._city_id = data.get('city_id')
         self._id = data.get('id')
         self._gps = gps
         self._battery = battery
@@ -53,6 +54,7 @@ class Bike:
         """ int: interval for the bike to send data """
         return self._interval
 
+    # TODO is this needed?
     @interval.setter
     def interval(self, interval):
         self._interval = interval
@@ -120,7 +122,7 @@ class Bike:
         # to send data at first iteration.
         count = self._interval
         while self._running:
-            # This is needed to hold loop if an simulation is running.
+            # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
 
             if self._battery.needs_charging():

@@ -5,6 +5,7 @@
 import pytest
 from src.zone import Zone, CityZone
 
+# Has speed limit 0
 forbidden_zone = {
     'coordinates': [
         [
@@ -47,20 +48,49 @@ forbidden_zone = {
     'speed_limit': 0
 }
 
+# Has no speed limit
+parking_zone = {
+    'coordinates': [
+        [
+        13.501333394186332,
+        59.38095474359335
+        ],
+        [
+            13.501267500001347,
+            59.38072700257973
+        ],
+        [
+            13.501676985295944,
+            59.38071261888538
+        ],
+        [
+            13.501705225660515,
+            59.38094275726101
+        ],
+        [
+            13.501333394186332,
+            59.38095474359335
+        ]
+    ]
+}
+
+# Point in restricted zone
 point_in_zone = [
     13.503079028643214,
     59.380789631247524
 ]
-point_outside_zone = [
+# Point in city but in parking_zone
+point_in_parking_zone = [
     13.501555455372227,
     59.38081819570931
 ]
+# Point just outside restricted zone
 point_barely_outside_zone = [
     13.504416913808058,
     59.38210294152472
 ]
 
-city_zone_coords = {
+city_zone_data = {
     'coordinates':[
         [
             13.498068850544314,
@@ -91,20 +121,31 @@ point_outside_city = [
     59.382188484555655
 ]
 
+
 def test_zone():
     """ Test if a point is inside a zone. """
     zone = Zone(forbidden_zone)
 
     assert zone.point_in_zone(point_in_zone) is True
-    assert zone.point_in_zone(point_outside_zone) is False
     assert zone.point_in_zone(point_barely_outside_zone) is False
+
 
 def test_city_zone():
     """ Test if a point is inside a city and outside a restricted zone. """
-    city_zone = CityZone(city_zone_coords)
+    city_zone = CityZone(city_zone_data)
     zone = Zone(forbidden_zone)
     city_zone.add_zone(zone)
 
     assert city_zone.get_speed_limit(point_outside_city) == 0
-    assert city_zone.get_speed_limit(point_outside_zone) == city_zone.speed_limit
+    assert city_zone.get_speed_limit(point_barely_outside_zone) == city_zone.speed_limit
+    assert city_zone.get_speed_limit(point_in_zone) == 0
+
+
+def test_city_zones():
+    """ Test if a point is in a parking zone without speed limit in data with coords. """
+    city_zone = CityZone(city_zone_data)
+    zones = [Zone(forbidden_zone), Zone(parking_zone, 15)]  # Adding speed limit as argument
+    city_zone.add_zones_list(zones)
+
+    assert city_zone.get_speed_limit(point_in_parking_zone) == 15
     assert city_zone.get_speed_limit(point_in_zone) == 0

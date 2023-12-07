@@ -46,10 +46,10 @@ class CityZone(Zone):
         speed_limit (int = 20): optional paramater if data doesn't contain a speed limit.
     """
 
-    def __init__(self, data: dict, speed_limit: int = 20, zones: list = []):
+    def __init__(self, data: dict, speed_limit: int = 20):
         """ Constructor """
         super().__init__(data, speed_limit)
-        self._zones = zones
+        self._zones = []
 
     def add_zone(self, zone: list[Zone]):
         """ Add a zone to city.
