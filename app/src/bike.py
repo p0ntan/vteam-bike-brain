@@ -20,7 +20,7 @@ class Bike:
         simulation (dict=None): simulation data for bike, default is None
         interval (int=10): interval in seconds for the bike to send data to server, default is 10
     """
-    API_URL = os.environ['API_URL']
+    API_URL = os.environ.get('API_URL', '')
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
