@@ -30,6 +30,6 @@ class TestBatterySimulator(unittest.TestCase):
         """ Creating a Battery and checks if it needs charging """
         battery = BatterySimulator(0.16)
         self.assertFalse(battery.needs_charging(), "Should be False")
-        
+
         battery_too_low = BatterySimulator(0.14)
         self.assertTrue(battery_too_low.needs_charging(), "Should be False")

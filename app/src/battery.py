@@ -17,10 +17,10 @@ class BatteryBase(ABC):
     @abstractmethod
     def level(self):
         """ float: the lever for the battery """
-    
+
     @abstractmethod
     def needs_charging(self):
-        """ 
+        """
         Returns:
             boolean: if battery is low and needs charging
         """
@@ -43,7 +43,7 @@ class BatterySimulator(BatteryBase):
         old_level = self._level
         self._level -= self._level_reduction
         return old_level
-    
+
     def needs_charging(self):
         """ Tells if battery needs charging.
 

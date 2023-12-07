@@ -24,7 +24,7 @@ class Bike:
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._active = True if data.get('active', 1) == 1 else False
+        self._active = 1 == data.get('active', 1)  # True if active is 1
         self._status = data.get('status_id')
         self._city_id = data.get('city_id')
         self._id = data.get('id')
@@ -38,7 +38,7 @@ class Bike:
         self._fast_interval = interval  # interval in seconds when bike is moving.
         self._interval = self.SLOW_INTERVAL  # interval that is used in loops, is changing when bike is running.
 
-        # Bike needs to be started by metod start(). When simulation is over the simulation event is set 
+        # Bike needs to be started by metod start(). When simulation is over the simulation event is set
         self._running = False
         self._simulation_event_off = asyncio.Event()
         self._simulation_event_off.set()  # This sets the event to true
@@ -69,14 +69,13 @@ class Bike:
             status (int): new status for the bike
         """
         # Set the interval to the slow interval, default for when status is changed.
-        self._used_interval = self.SLOW_INTERVAL
-
         if status == 1 and self._battery.needs_charging():
             # Control to not set the status to 1 when maintenance required (low battery)
             status = 3
+            self._interval = self.SLOW_INTERVAL
         elif status == 2:
             # Change to faster interval when bike is rented, status 2
-            self._used_interval = self._interval
+            self._interval = self._fast_interval
         self._status = status
 
     def lock_bike(self):
@@ -123,7 +122,7 @@ class Bike:
         """ Asynchronous method to run the simulation for a bike. """
         if self._simulation is None or not self._simulation_event_off.is_set():
             return
-        
+
         # Simulation is running/on, setting _simulation_event_off is False
         self._simulation_event_off.clear()
 
@@ -176,7 +175,7 @@ class Bike:
 
     def start(self):
         """ Start the bikes program
-        
+
         Returns:
             self._run_bike(): Task to run by the SSE-listener
         """

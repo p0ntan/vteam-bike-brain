@@ -18,6 +18,7 @@ from src.sselistener import SSEListener
 # TODO se till att programmet inte stoppar när den tappar kontakt med servern.
 #
 
+
 async def main():
     """ Main program to start up all bikes for simulation.
 
@@ -27,7 +28,7 @@ async def main():
     interval_in_seconds = 10
 
     # API-URL
-    base_url = os.environ['API_URL']
+    base_url = os.environ.get('API_URL', '')
 
     # Load routes with RouteHandler
     r_handler = RouteHandler('./routes', interval=interval_in_seconds)

@@ -16,6 +16,7 @@ bike_data = {
     'coords': [13.508699207322167, 59.38210003526896],
 }
 
+
 def test_create_bike():
     """ Creating a Bike and checks data """
     gps_sim = GpsSimulator(bike_data['coords'])  # Could be mocked, but it takes away the purpose of the test
@@ -44,6 +45,7 @@ def test_create_bike():
     assert 'speed' in data_from_bike
     assert isinstance(data_from_bike.get('speed'), int)
 
+
 def test_moving_bike():
     """ Update position for a bike, see that it sends out speed and new position """
     gps_sim = GpsSimulator(bike_data['coords'])  # Could be mocked, but it takes away the purpose of the test
@@ -65,6 +67,7 @@ def test_moving_bike():
     assert data_from_bike.get('speed') == 72  # 200 meters in 10 sek = 72 km/h
     assert data_from_bike.get('coords') == new_position
 
+
 @pytest.mark.asyncio
 async def test_start_bike_low_battery():
     """ Test to see if status changes if battery gets to low """
@@ -77,15 +80,14 @@ async def test_start_bike_low_battery():
     # Mock methods to isolate test
     # pylint: disable=protected-access
     bike._update_bike_data = AsyncMock()
-    bike._used_interval = 2
+    bike._interval = 2
     bike._running = True
-    bike._running_simulation = False
 
     async def stop_bike_after_5_seconds():
         await asyncio.sleep(5)
         # pylint: disable=protected-access
         bike._running = False
-    
+
     # Check that status is 1 when starting bike
     assert bike.status == 1
 
@@ -98,6 +100,7 @@ async def test_start_bike_low_battery():
     # Control that needs_charging has run three times and status has changed
     assert bike._battery.needs_charging.call_count == 3
     assert bike.status == 3
+
 
 def test_change_status_when_low_battery():
     """ Trying to change status when battery i low. """
