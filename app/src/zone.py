@@ -5,6 +5,7 @@ Zone-module
 
 from shapely.geometry import Point, Polygon
 
+
 class Zone():
     """ Zone-class that will be used as a base for all zones in a city.
 
@@ -30,7 +31,7 @@ class Zone():
             point (list[float, float]): list with coordinates [longitude, latitude]
 
         Returns:
-            bool: true if the point is inside the zone        
+            bool: true if the point is inside the zone
         """
         polygon = Polygon(self._coordinates)
         point = Point(*point)
@@ -40,7 +41,7 @@ class Zone():
 
 class CityZone(Zone):
     """ CityZone represents the city. Based on the Zone-class but can also contain other zoners.
-    
+
     Args:
         data (dict): with data needed for the zone
         speed_limit (int = 20): optional paramater if data doesn't contain a speed limit.

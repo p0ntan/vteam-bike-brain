@@ -8,12 +8,37 @@ import pytest
 from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
+from src.zone import CityZone, Zone
 
 bike_data = {
     'id': 1,
     'city_id': 'STHLM',
     'status_id': 1,
     'coords': [13.508699207322167, 59.38210003526896],
+}
+
+# Structure for the zone_data
+zone_data = {
+    'city_id': 'TEST',
+    'geometry': {
+        'coordinates': []
+    },
+    'speed_limit': 20,
+    'zones': [
+        {
+            'zone_id': 3,
+            'geometry': {
+                'coordinates': []
+            },
+            'speed_limit': 0,
+        },
+        {
+            'zone_id': 3,
+            'geometry': {
+                'coordinates': []
+            }
+        }
+    ]
 }
 
 
@@ -122,7 +147,9 @@ def test_lock_unlock_bike():
     gps_sim = MagicMock()
     battery_sim = MagicMock()
     bike = Bike(bike_data, battery_sim, gps_sim)
-    bike._get_speed_limit = MagicMock(return_value=20)
+    # pylint: disable=protected-access
+    bike._city_zone = MagicMock()
+    bike._city_zone.get_speed_limit = MagicMock(return_value=20)
 
     assert bike._active is True
 
@@ -139,8 +166,32 @@ def test_lock_unlock_bike():
     assert bike._speed_limit == 20
 
 
-def test_bike_outside_city_limits():
-    """ Trying to lock bike. """
+def test_no_city_zone():
+    """ Test if there is no city zone """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
     bike = Bike(bike_data, battery_sim, gps_sim)
+
+    # pylint: disable=protected-access
+    bike._update_speed_limit()
+    assert bike._speed_limit == 20
+
+
+def test_load_zone_data():
+    """ Test to load the zone data correctly """
+    gps_sim = MagicMock()
+    battery_sim = MagicMock()
+    bike = Bike(bike_data, battery_sim, gps_sim)
+    bike.add_zones(zone_data)  # Data at the top of file
+
+    # pylint: disable=protected-access
+    city_zone = bike._city_zone
+    forbidden_zone = city_zone._zones[0]
+    zone_without_limit = city_zone._zones[1]
+
+    assert isinstance(city_zone, CityZone)
+    assert city_zone.speed_limit == 20
+    assert isinstance(forbidden_zone, Zone)
+    assert forbidden_zone.speed_limit == 0
+    assert isinstance(zone_without_limit, Zone)
+    assert zone_without_limit.speed_limit == 20

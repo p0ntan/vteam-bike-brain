@@ -7,6 +7,7 @@ import asyncio
 import aiohttp
 from src.battery import BatteryBase
 from src.gps import GpsBase
+from src.zone import Zone, CityZone
 
 
 class Bike:
@@ -31,8 +32,8 @@ class Bike:
         self._id = data.get('id')
         self._gps = gps
         self._battery = battery
-        self._city_zone = data.get('city_zone', {})
-        self._speed_limit = 20  # TODO change into something more useful
+        self._city_zone = None
+        self._speed_limit = 20  # Fallback speed limit, speed limit is set automatically by position
         self._simulation = simulation
 
         # Intervals in bike, _used_interval is the one that is used in loops
@@ -64,6 +65,22 @@ class Bike:
         """ int: statuscode for the bike """
         return self._status
 
+    def add_zones(self, city_zone_data):
+        """ Method to add zones to bike. Can also be used to 'recache' zones.
+
+        Args:
+            city_zone_data (dict): data needed for setting up zones
+        """
+        city_zone = CityZone(city_zone_data)
+        backup_speed_limit = city_zone.speed_limit  # Used for zones without a speed limit
+
+        zones = []
+        for zone in city_zone_data.get('zones'):
+            zones.append(Zone(zone, backup_speed_limit))
+
+        city_zone.add_zones_list(zones)
+        self._city_zone = city_zone
+
     def set_status(self, status: int):
         """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
 
@@ -93,12 +110,9 @@ class Bike:
     def _update_speed_limit(self):
         """ Updates the speedlimit for the bike. """
         # Only update speedlimit if bike is active/unlocked.
-        if self._active:
-            self._speed_limit = self._get_speed_limit()
-
-    def _get_speed_limit(self):
-        """ Gets the speedlimit, based on position. """
-        return 20  # TODO add logic for speedlimit
+        if self._active and self._city_zone is not None:
+            position = self._gps.position
+            self._speed_limit = self._city_zone.get_speed_limit(position)
 
     def get_data(self):
         """ Get data to send to server

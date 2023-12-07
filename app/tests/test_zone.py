@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 """ Module for testing the class Zone and CityZone """
 
-import pytest
 from src.zone import Zone, CityZone
 
 # Has speed limit 0
@@ -52,8 +51,8 @@ forbidden_zone = {
 parking_zone = {
     'coordinates': [
         [
-        13.501333394186332,
-        59.38095474359335
+            13.501333394186332,
+            59.38095474359335
         ],
         [
             13.501267500001347,
@@ -91,7 +90,7 @@ point_barely_outside_zone = [
 ]
 
 city_zone_data = {
-    'coordinates':[
+    'coordinates': [
         [
             13.498068850544314,
             59.378897877374186
