@@ -6,7 +6,7 @@ import unittest
 from src.battery import BatterySimulator
 
 
-class TestBattery(unittest.TestCase):
+class TestBatterySimulator(unittest.TestCase):
     """ Testclass for testing class BatterySimulator """
 
     def test_create_without_argument(self):
@@ -17,11 +17,19 @@ class TestBattery(unittest.TestCase):
 
     def test_create_with_argument(self):
         """ Creating a Battery with argument and control level """
-        level = 98
-        level_reduction = 0.5
+        level = 0.98
+        level_reduction = 0.005
         battery = BatterySimulator(level, level_reduction)
 
-        self.assertEqual(battery.level, 98, "Should be 98")
+        self.assertEqual(battery.level, 0.98, "Should be 0.98")
         self.assertEqual(
-            battery.level, level - level_reduction, "Should be 97.5"
+            battery.level, level - level_reduction, "Should be 0.975"
         )
+
+    def test_needs_charging(self):
+        """ Creating a Battery and checks if it needs charging """
+        battery = BatterySimulator(0.16)
+        self.assertFalse(battery.needs_charging(), "Should be False")
+
+        battery_too_low = BatterySimulator(0.14)
+        self.assertTrue(battery_too_low.needs_charging(), "Should be False")

@@ -18,24 +18,30 @@ class Bike:
         battery (BatteryBase): the battery used in the bike
         gps (GpsBase): the gps for the bike, used for position and speed
         simulation (dict=None): simulation data for bike, default is None
-        interval (int=10): interval in seconds for the bike to send data to server, default is 10
+        interval (int=10): interval in seconds for the bike to send data to server when moving, default is 10
     """
-    API_URL = os.environ['API_URL']
+    API_URL = os.environ.get('API_URL', '')
+    SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._status = data['status_id']
-        self._city_id = data['city_id']
-        self._id = data['id']
+        self._active = data.get('active', 1) == 1  # True if active is 1
+        self._status = data.get('status_id')
+        self._city_id = data.get('city_id')
+        self._id = data.get('id')
         self._gps = gps
         self._battery = battery
-        # self._city_zone = data['city_zone']
-        self._interval = interval  # interval in seconds when bike is moving
+        self._city_zone = data.get('city_zone', {})
+        self._speed_limit = 20  # TODO change into something more useful
         self._simulation = simulation
-        self._slow_interval = 30  # interval in seconds when bike stands still
 
-        # Bike needs to be started with method start()
+        # Intervals in bike, _used_interval is the one that is used in loops
+        self._fast_interval = interval  # interval in seconds when bike is moving.
+        self._interval = self.SLOW_INTERVAL  # interval that is used in loops, is changing when bike is running.
+
+        # Bike needs to be started by metod start(). When simulation is over the simulation event is set
         self._running = False
-        self._running_simulation = False
+        self._simulation_event_off = asyncio.Event()
+        self._simulation_event_off.set()  # This sets the event to true
 
     @property
     def id(self):
@@ -56,22 +62,41 @@ class Bike:
         """ int: statuscode for the bike """
         return self._status
 
-    @status.setter
-    def status(self, status):
-        """ Set the status of the bike, intened to be used by admin/serviceworker.
+    def set_status(self, status: int):
+        """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
 
         Args:
             status (int): new status for the bike
         """
+        # Set the interval to the slow interval, default for when status is changed.
+        if status == 1 and self._battery.needs_charging():
+            # Control to not set the status to 1 when maintenance required (low battery)
+            status = 3
+            self._interval = self.SLOW_INTERVAL
+        elif status == 2:
+            # Change to faster interval when bike is rented, status 2
+            self._interval = self._fast_interval
         self._status = status
 
     def lock_bike(self):
-        """ Locks the bike by changing status to avaliable (1) """
-        self._status = 1
+        """ Locks the bike by changing active to False and sets speed limit to zero """
+        self._speed_limit = 0
+        self._active = False
 
     def unlock_bike(self):
-        """ Unlocks the bike by changing status to rented (2) """
-        self._status = 2
+        """ Unlocks the bike by changing active to True """
+        self._active = True
+        self._update_speed_limit()
+
+    def _update_speed_limit(self):
+        """ Updates the speedlimit for the bike. """
+        # Only update speedlimit if bike is active/unlocked.
+        if self._active:
+            self._speed_limit = self._get_speed_limit()
+
+    def _get_speed_limit(self):
+        """ Gets the speedlimit, based on position. """
+        return 20  # TODO add logic for speedlimit
 
     def get_data(self):
         """ Get data to send to server
@@ -89,18 +114,36 @@ class Bike:
 
     async def _run_bike(self):
         """ The asynchronous loop in the bike when program is running. """
+        # loop_interval is number of seconds between each loop
+        loop_interval = 2
+        # count controls each loop iteration. Will be set to same as interval for first loop
+        # to send data at first iteration.
+        count = self._interval
         while self._running:
-            if not self._running_simulation:
+            # This is needed to hold loop if an simulation is running.
+            await self._simulation_event_off.wait()
+
+            if self._battery.needs_charging():
+                self.set_status(3)  # 3 is the status for maintenance required
+
+            self._update_speed_limit()
+
+            # When count is same as interval, send data to server.
+            if count == self._interval:
                 data = self.get_data()
                 await self._update_bike_data(data)
-            await asyncio.sleep(self._slow_interval)
+                count = 0
+
+            await asyncio.sleep(loop_interval)
+            count += loop_interval
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
-        if self._simulation is None or self._running_simulation:
+        if self._simulation is None or not self._simulation_event_off.is_set():
             return
 
-        self._running_simulation = True
+        # Simulation is running/on, setting _simulation_event_off is False
+        self._simulation_event_off.clear()
 
         # Loop through each trip
         for trip in self._simulation['trips']:
@@ -125,7 +168,7 @@ class Bike:
                 for position in trip['coords']:
                     self._gps.position = (position, self._interval)
                     await self._update_bike_data(self.get_data())
-                    await asyncio.sleep(self._interval)
+                    await asyncio.sleep(self._fast_interval)
 
                 # Change url for returning the bike and then return the bike with
                 req_url = self.API_URL + f"/bikes/return/{trip_id}"
@@ -134,10 +177,15 @@ class Bike:
                         # TODO handle response if needed
                         pass
 
-        self._running_simulation = False
+        # Simulation is over, set _simulation_event_off to True
+        self._simulation_event_off.set()
 
-    async def _update_bike_data(self, data):
-        """ Asynchronous method to send data to server """
+    async def _update_bike_data(self, data: dict):
+        """ Asynchronous method to send data to server.
+
+        Args:
+            data (dict): data to send to server
+        """
         route = f"/bikes/{self.id}"
         req_url = self.API_URL + route
         async with aiohttp.ClientSession() as session:
@@ -149,7 +197,11 @@ class Bike:
                 pass
 
     def start(self):
-        """ Start the bikes program """
+        """ Start the bikes program
+
+        Returns:
+            self._run_bike(): Task to run by the SSE-listener
+        """
         self._running = True
         return self._run_bike()
 
