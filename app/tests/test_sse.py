@@ -1,12 +1,12 @@
-#!/usr/bin/env python3
-# -*- coding: UTF-8 -*-
-""" Module for testing the class SSEListener """
+# #!/usr/bin/env python3
+# # -*- coding: UTF-8 -*-
+# """ Module for testing the class SSEListener """
 
-import pytest
-from src.sselistener import SSEListener
+# import pytest
+# from src.sselistener import SSEListener
 
-def test_sselistener():
-    pass
+# def test_sselistener():
+#     pass
 
 # @pytest.mark.asyncio
 # async def test_sse_listener():
