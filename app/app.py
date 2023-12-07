@@ -4,7 +4,6 @@
 Main file for running simulation for all bikes in vteam-project.
 """
 import os
-import threading
 import asyncio
 import requests
 
@@ -18,25 +17,6 @@ from src.sselistener import SSEListener
 # TODO va mer?
 # TODO se till att programmet inte stoppar när den tappar kontakt med servern.
 #
-
-
-def start_sse(bikes, url):
-    """ Function to start the SSEListener in an own thread and eventloop.
-
-    Args:
-        bikes (dict[Bike]): dict of all the bikes to give instructions to
-        url (str): URL to get events from server
-    """
-    async def async_start():
-        tasks = []
-        for bike in bikes.values():
-            listener = SSEListener(bike, url)
-            tasks.append(listener.listen())
-
-        await asyncio.gather(*tasks)
-
-    asyncio.run(async_start())
-
 
 async def main():
     """ Main program to start up all bikes for simulation.
@@ -60,15 +40,13 @@ async def main():
     # Initialize bikes with BikeFactory
     bike_factory = BikeFactory(bike_data, routes, interval=interval_in_seconds)
 
-    # Start bikes
+    # Start bikes and listeners as separate tasks.
     tasks = []
     for bike in bike_factory.bikes.values():
+        sse_url = f"{base_url}/bikes/instructions"
+        listener = SSEListener(bike, sse_url)
         tasks.append(bike.start())
-
-    # Start SSE:s in it's own thread
-    sse_url = f"{base_url}/bikes/instructions"
-    sse_thread = threading.Thread(target=start_sse, args=(bike_factory.bikes, sse_url))
-    sse_thread.start()
+        tasks.append(listener.listen())
 
     print("Running")
 
