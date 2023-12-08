@@ -134,7 +134,7 @@ class Bike:
         loop_interval = 2
         # count controls each loop iteration. Will be set to same as interval for first loop
         # to send data at first iteration.
-        count = self._interval
+        count = self._interval / 2
         while self._running:
             # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
@@ -142,10 +142,10 @@ class Bike:
             if self._battery.needs_charging():
                 self.set_status(3)  # 3 is the status for maintenance required
 
-            self._update_speed_limit()
+            # self._update_speed_limit()
 
             # When count is same as interval, send data to server.
-            if count == self._interval:
+            if count >= self._interval:
                 data = self.get_data()
                 await self._update_bike_data(data)
                 count = 0
@@ -163,21 +163,21 @@ class Bike:
 
         # Loop through each trip
         for trip in self._simulation['trips']:
-            req_url = self.API_URL + f"/bikes/rent/{self.id}"
+            req_url = self.API_URL + f"/user/bikes/rent/{self.id}"
             response_ok = False
 
             # headers and data is added for both renting and returning bike
             headers = {'x-access-token': trip['user']['token']}
-            data = {'id': trip['user']['id'], 'bike_id': self.id}
+            data = {'userId': trip['user']['id']}
 
             # Send a post-request to start renting the bike, if ok start simulation.
             # TODO add error handling
             async with aiohttp.ClientSession() as session:
                 async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
-                    if response.status == 200:
+                    if response.status < 300:
                         response_ok = True
                         response_data = await response.json()
-                        trip_id = response_data['trip_id']
+                        trip_id = response_data.get('trip_id')
 
             if response_ok:
                 # Start looping through the actual trip
@@ -187,7 +187,7 @@ class Bike:
                     await asyncio.sleep(self._fast_interval)
 
                 # Change url for returning the bike and then return the bike with
-                req_url = self.API_URL + f"/bikes/return/{trip_id}"
+                req_url = self.API_URL + f"/user/bikes/return/{trip_id}"
                 async with aiohttp.ClientSession() as session:
                     async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
                         # TODO handle response if needed
@@ -207,7 +207,7 @@ class Bike:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.put(req_url, json=data, timeout=1.5) as response:
-                    if response.status != 200:
+                    if response.status > 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:
                 pass

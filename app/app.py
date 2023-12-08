@@ -35,7 +35,7 @@ async def main():
     routes = r_handler.routes
 
     # Get bike_data from server
-    response = requests.get(f"{base_url}/get", timeout=1.5)
+    response = requests.get(f"{base_url}/bikes", timeout=1.5)
     bike_data = response.json()
 
     # Initialize bikes with BikeFactory
@@ -46,8 +46,8 @@ async def main():
     for bike in bike_factory.bikes.values():
         sse_url = f"{base_url}/bikes/instructions"
         listener = SSEListener(bike, sse_url)
-        tasks.append(bike.start())
         tasks.append(listener.listen())
+        tasks.append(bike.start())
 
     print("Running")
 
