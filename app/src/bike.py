@@ -90,7 +90,7 @@ class Bike:
         # Set the interval to the slow interval, default for when status is changed.
         if status == 1 and self._battery.needs_charging():
             # Control to not set the status to 1 when maintenance required (low battery)
-            status = 3
+            status = 4
             self._interval = self.SLOW_INTERVAL
         elif status == 2:
             # Change to faster interval when bike is rented, status 2
@@ -132,19 +132,19 @@ class Bike:
         """ The asynchronous loop in the bike when program is running. """
         # loop_interval is number of seconds between each loop
         loop_interval = 2
-        # count controls each loop iteration. Will be set to same as interval for first loop
-        # to send data at first iteration.
-        count = self._interval / 2
+        # count controls each loop iteration. Will be set to same as interval - 10 for first loop
+        # to send data at first iteration for slight delay.
+        count = self._interval - 10
         while self._running:
             # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
 
             if self._battery.needs_charging():
-                self.set_status(3)  # 3 is the status for maintenance required
+                self.set_status(4)  # 4 is the status for maintenance required
 
             # self._update_speed_limit()
 
-            # When count is same as interval, send data to server.
+            # When count is same or bigger as interval, send data to server.
             if count >= self._interval:
                 data = self.get_data()
                 await self._update_bike_data(data)
@@ -174,15 +174,19 @@ class Bike:
             # TODO add error handling
             async with aiohttp.ClientSession() as session:
                 async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
-                    if response.status < 300:
-                        response_ok = True
+                    if response.status == 200:
                         response_data = await response.json()
+                        response_ok = True if 'errors' not in response_data else False
                         trip_id = response_data.get('trip_id')
 
             if response_ok:
                 # Start looping through the actual trip
                 for position in trip['coords']:
                     self._gps.position = (position, self._interval)
+
+                    if self._battery.needs_charging():
+                        self.set_status(4)  # 4 is the status for maintenance required
+
                     await self._update_bike_data(self.get_data())
                     await asyncio.sleep(self._fast_interval)
 

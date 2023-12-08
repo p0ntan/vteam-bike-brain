@@ -41,7 +41,11 @@ class BatterySimulator(BatteryBase):
     def level(self):
         """ float: the lever of the battery. Will be lowered in simulation automaticly. """
         old_level = self._level
-        self._level -= self._level_reduction
+
+        # Make sure the battery stops at 0
+        if self._level > 0:
+            self._level -= self._level_reduction
+
         return old_level
 
     def needs_charging(self):
