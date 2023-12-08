@@ -2,7 +2,6 @@
 """
 Bikefactory module, used for creating each bike with injections
 """
-import json
 from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
@@ -28,13 +27,13 @@ class BikeFactory:
         self._bikes = {}
 
         for data_item in bike_data:
-            bike_id = data_item['id']
+            bike_id = data_item.get('id')
             simulation = None
 
             if bike_id in routes:
                 simulation = routes[bike_id]
 
-            gps_sim = GpsSimulator(json.loads(data_item['coords']))
+            gps_sim = GpsSimulator(data_item.get('coords'))
             battery_sim = BatterySimulator()
             new_bike = Bike(data_item, battery_sim, gps_sim, simulation, interval)
 

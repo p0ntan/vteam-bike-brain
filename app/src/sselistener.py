@@ -24,7 +24,6 @@ class SSEListener:
     async def listen(self):
         """ Start listening to events sent from server. """
         headers = {'bike_id': str(self._bike.id)}
-        reconnection_attempts = 0
         while True:
             try:
                 async for event in aiosseclient(self._api_url, headers=headers):
@@ -37,8 +36,7 @@ class SSEListener:
             # pylint: disable=broad-exception-caught
             except Exception as error:
                 print(f"Error in SSE connection: {error}")
-                reconnection_attempts += 1
-                await asyncio.sleep(reconnection_attempts)
+                await asyncio.sleep(5)  # Wait 5 seconds before trying to reconnect
 
     async def _control_bike(self, data: dict):
         """ Control the bike with actions setn from server.
