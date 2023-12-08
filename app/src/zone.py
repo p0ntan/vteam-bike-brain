@@ -28,7 +28,7 @@ class Zone():
         """ See if a point is inside the zone.
 
         Args:
-            point (list[float, float]): list with coordinates [longitude, latitude]
+            point_coords (list[float, float]): list with coordinates [longitude, latitude]
 
         Returns:
             bool: true if the point is inside the zone
