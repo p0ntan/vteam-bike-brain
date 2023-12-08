@@ -176,7 +176,7 @@ class Bike:
                 async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
                     if response.status == 200:
                         response_data = await response.json()
-                        response_ok = True if 'errors' not in response_data else False
+                        response_ok = 'errors' not in response_data
                         trip_id = response_data.get('trip_id')
 
             if response_ok:

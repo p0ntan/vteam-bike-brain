@@ -2,7 +2,6 @@
 """
 Bikefactory module, used for creating each bike with injections
 """
-import json
 from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator

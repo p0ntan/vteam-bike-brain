@@ -123,7 +123,7 @@ async def test_start_bike_low_battery():
 
     # Control that needs_charging has run three times and status has changed
     assert bike._battery.needs_charging.call_count == 3
-    assert bike.status == 3
+    assert bike.status == 4
 
 
 def test_change_status_low_battery():
@@ -135,11 +135,11 @@ def test_change_status_low_battery():
     bike = Bike(bike_data, battery_sim, gps_sim)
     assert bike.status == 1
 
-    bike.set_status(3)
-    assert bike.status == 3
+    bike.set_status(4)
+    assert bike.status == 4
 
-    bike.set_status(1)  # Should stay at 3 since low battery
-    assert bike.status == 3
+    bike.set_status(1)  # Should stay at 4 since low battery
+    assert bike.status == 4
 
 
 def test_lock_unlock_bike():
