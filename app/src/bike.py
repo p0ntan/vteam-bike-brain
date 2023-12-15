@@ -25,7 +25,7 @@ class Bike:
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._active = data.get('active')
+        self._active = data.get('active', True)
         self._status = data.get('status_id')
         self._city_id = data.get('city_id')
         self._id = data.get('id')
