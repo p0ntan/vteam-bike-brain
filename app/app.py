@@ -38,6 +38,13 @@ async def main():
     response = requests.get(f"{base_url}/bikes", timeout=1.5)
     bike_data = response.json()
 
+    # Get zones for bikes in simulation.
+    zones = {}
+    for bike_id in [1, 600, 800]:
+        response = requests.get(f"{base_url}/bikes/{bike_id}/zones", timeout=1.5)
+        data = response.json()
+        zones[data.get('city_id')] = data
+
     # Initialize bikes with BikeFactory
     bike_factory = BikeFactory(bike_data, routes, interval=interval_in_seconds)
 
