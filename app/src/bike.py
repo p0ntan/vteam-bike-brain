@@ -21,14 +21,14 @@ class Bike:
         simulation (dict=None): simulation data for bike, default is None
         interval (int=10): interval in seconds for the bike to send data to server when moving, default is 10
     """
+    API_KEY = os.environ.get('API_KEY', '')
     API_URL = os.environ.get('API_URL', '')
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
         self._active = data.get('active', 1) == 1  # True if active is 1
         self._status = data.get('status_id')
-        # TODO city_id needed?
-        # self._city_id = data.get('city_id')
+        self._city_id = data.get('city_id')
         self._id = data.get('id')
         self._gps = gps
         self._battery = battery
@@ -43,7 +43,7 @@ class Bike:
         # Bike needs to be started by metod start(). When simulation is over the simulation event is set
         self._running = False
         self._simulation_event_off = asyncio.Event()
-        self._simulation_event_off.set()  # This sets the event to true
+        self._simulation_event_off.set()  # This sets the event to true, meaning simulation is NOT running
 
     @property
     def id(self):
@@ -122,6 +122,7 @@ class Bike:
         """
         return {
             'id': self.id,
+            'city_id': self._city_id,
             'status_id': self._status,
             'charge_perc': round(self._battery.level, 2),
             'coords': self._gps.position,
@@ -165,10 +166,11 @@ class Bike:
         for trip in self._simulation['trips']:
             req_url = self.API_URL + f"/user/bikes/rent/{self.id}"
             response_ok = False
+            user = trip.get('user', {})
 
             # headers and data is added for both renting and returning bike
-            headers = {'x-access-token': trip['user']['token']}
-            data = {'userId': trip['user']['id']}
+            headers = {'x-access-token': user.get('token', '')}
+            data = {'userId': user.get('id', '')}
 
             # Send a post-request to start renting the bike, if ok start simulation.
             # TODO add error handling
@@ -208,9 +210,11 @@ class Bike:
         """
         route = f"/bikes/{self.id}"
         req_url = self.API_URL + route
+        headers = {'x-api-key': self.API_KEY}
+
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(req_url, json=data, timeout=1.5) as response:
+                async with session.put(req_url, json=data, headers=headers, timeout=1.5) as response:
                     if response.status > 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:

@@ -1,0 +1,74 @@
+{
+    "city": 2,
+    "initialStart": [
+        13.50669,
+        59.39202
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": 286.2,
+                "duration": 46.8
+            },
+            "user": {
+                "id": 707,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzA3LCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzODk3MCwiZXhwIjoxNzMyNDc0OTcwfQ.Y-6L2Xtn7rNvGx2FvzCS1kDXPmo4XXvkOd1Clh_cuNc"
+            },
+            "coords": [
+                [
+                    13.50669,
+                    59.39202
+                ],
+                [
+                    13.50637,
+                    59.3921
+                ],
+                [
+                    13.5045,
+                    59.39019
+                ],
+                [
+                    13.50438,
+                    59.39015
+                ],
+                [
+                    13.50406,
+                    59.39022
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": 225.3,
+                "duration": 36.9
+            },
+            "user": {
+                "id": 708,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzA4LCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzODk3MCwiZXhwIjoxNzMyNDc0OTcwfQ.1iD6xjcgaaEHeJKInj3FphYoLAjyxkklJJxWaPtgpJE"
+            },
+            "coords": [
+                [
+                    13.50406,
+                    59.39022
+                ],
+                [
+                    13.5039,
+                    59.39026
+                ],
+                [
+                    13.50371,
+                    59.39033
+                ],
+                [
+                    13.50461,
+                    59.39109
+                ],
+                [
+                    13.50537,
+                    59.39193
+                ]
+            ]
+        }
+    ],
+    "apiKey": "51d46bf812c50904162245f9f3fe592b"
+}

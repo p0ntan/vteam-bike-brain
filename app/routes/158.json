@@ -1,6 +1,9 @@
 {
     "city": 1,
-    "initialStart": [18.06313,59.31489],
+    "initialStart": [
+        18.06313,
+        59.31489
+    ],
     "trips": [
         {
             "summary": {
@@ -126,5 +129,6 @@
                 ]
             ]
         }
-    ]
+    ],
+    "apiKey": "cfc28f09d0cc7c78da694f8f467dea06"
 }
