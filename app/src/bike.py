@@ -21,12 +21,11 @@ class Bike:
         simulation (dict=None): simulation data for bike, default is None
         interval (int=10): interval in seconds for the bike to send data to server when moving, default is 10
     """
-    API_KEY = os.environ.get('API_KEY', '')
     API_URL = os.environ.get('API_URL', '')
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._active = data.get('active', 1) == 1  # True if active is 1
+        self._active = data.get('active')
         self._status = data.get('status_id')
         self._city_id = data.get('city_id')
         self._id = data.get('id')
@@ -35,6 +34,7 @@ class Bike:
         self._city_zone = None
         self._speed_limit = 20  # Fallback speed limit, speed limit is set automatically by position
         self._simulation = simulation
+        self._api_key = '' if simulation is None else simulation.get('apiKey', '')
 
         # Intervals in bike, _used_interval is the one that is used in loops
         self._fast_interval = interval  # interval in seconds when bike is moving.
@@ -55,10 +55,10 @@ class Bike:
         """ int: interval for the bike to send data """
         return self._interval
 
-    # TODO is this needed?
-    @interval.setter
-    def interval(self, interval):
-        self._interval = interval
+    @property
+    def api_key(self):
+        """ str: api_key for the bike. Used by SSE-listener. """
+        return self._api_key
 
     @property
     def status(self):
@@ -87,10 +87,9 @@ class Bike:
         Args:
             status (int): new status for the bike
         """
-        # Set the interval to the slow interval, default for when status is changed.
-        if status == 1 and self._battery.needs_charging():
+        if status == 1:
             # Control to not set the status to 1 when maintenance required (low battery)
-            status = 4
+            status = 4 if self._battery.needs_charging() else status
             self._interval = self.SLOW_INTERVAL
         elif status == 2:
             # Change to faster interval when bike is rented, status 2
@@ -133,9 +132,9 @@ class Bike:
         """ The asynchronous loop in the bike when program is running. """
         # loop_interval is number of seconds between each loop
         loop_interval = 2
-        # count controls each loop iteration. Will be set to same as interval - 10 for first loop
-        # to send data at first iteration for slight delay.
-        count = self._interval - 10
+        # count controls each loop iteration. Will be set to same as interval for first loop
+        # to send data at first iteration.
+        count = self._interval
         while self._running:
             # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
@@ -169,7 +168,10 @@ class Bike:
             user = trip.get('user', {})
 
             # headers and data is added for both renting and returning bike
-            headers = {'x-access-token': user.get('token', '')}
+            headers = {
+                'x-access-token': user.get('token', ''),
+                'x-api-key': self.api_key
+            }
             data = {'userId': user.get('id', '')}
 
             # Send a post-request to start renting the bike, if ok start simulation.
@@ -180,6 +182,9 @@ class Bike:
                         response_data = await response.json()
                         response_ok = 'errors' not in response_data
                         trip_id = response_data.get('trip_id')
+                    else:
+                        response_data = await response.json()
+                        print(response_data)
 
             if response_ok:
                 # Start looping through the actual trip
@@ -210,11 +215,11 @@ class Bike:
         """
         route = f"/bikes/{self.id}"
         req_url = self.API_URL + route
-        headers = {'x-api-key': self.API_KEY}
+        headers = {'x-api-key': self._api_key}
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(req_url, json=data, headers=headers, timeout=1.5) as response:
+                async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
                     if response.status > 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:

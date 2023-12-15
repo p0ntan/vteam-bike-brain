@@ -34,16 +34,17 @@ async def main():
     r_handler = RouteHandler('./routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
-    # Get bike_data from server
-    response = requests.get(f"{base_url}/bikes", timeout=1.5)
+    # Get bike_data from server 
+    headers = {'x-api-key': '080d17d62d28f82a97922ce6640a4a03'}
+    response = requests.get(f"{base_url}/bikes", headers=headers, timeout=1.5)
     bike_data = response.json()
 
     # Get zones for bikes in simulation.
-    zones = {}
-    for bike_id in [1, 600, 800]:
-        response = requests.get(f"{base_url}/bikes/{bike_id}/zones", timeout=1.5)
-        data = response.json()
-        zones[data.get('city_id')] = data
+    # zones = {}
+    # for bike_id in [1, 600, 800]:
+    #     response = requests.get(f"{base_url}/bikes/{bike_id}/zones", headers=headers, timeout=1.5)
+    #     data = response.json()
+    #     zones[data.get('city_id')] = data
 
     # Initialize bikes with BikeFactory
     bike_factory = BikeFactory(bike_data, routes, interval=interval_in_seconds)

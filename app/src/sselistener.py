@@ -23,7 +23,7 @@ class SSEListener:
 
     async def listen(self):
         """ Start listening to events sent from server. """
-        headers = {'bike_id': str(self._bike.id)}
+        headers = {'bike_id': str(self._bike.id), 'x-api-key': self._bike.api_key}
         while True:
             try:
                 async for event in aiosseclient(self._api_url, headers=headers):
