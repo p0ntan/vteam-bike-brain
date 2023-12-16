@@ -110,6 +110,7 @@ async def test_start_bike_low_battery():
 
     # Mock methods to isolate test
     # pylint: disable=protected-access
+    bike._interval = 2
     bike._update_bike_data = AsyncMock()
     bike._running = True
 
