@@ -16,3 +16,4 @@ This will start a container and keep it in the shell. To remove images when cont
 ```
 ./setup.bash down
 ```
+
