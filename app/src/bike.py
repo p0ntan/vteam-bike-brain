@@ -83,11 +83,7 @@ class Bike:
         self._city_zone = city_zone
 
     async def update_zones(self):
-        """ Method to update zones from server.
-
-        Args:
-            city_zone_data (dict): data needed for setting up zones
-        """
+        """ Method to update zones from server. """
         route = f"/bikes/{self.id}/zones"
         req_url = self.API_URL + route
         headers = {'x-api-key': self.api_key}

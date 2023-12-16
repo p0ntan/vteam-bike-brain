@@ -164,6 +164,7 @@ def test_city_zones_with_speed():
     assert city_zone.get_speed_limit(point_in_zone) == 0
     assert city_zone.get_speed_limit(point_barely_outside_zone) == 20
 
+
 def test_city_zones_without_speed():
     """ Test if a point is in a parking zone with speed limit without speed limit. """
     city_zone = CityZone(city_zone_data)

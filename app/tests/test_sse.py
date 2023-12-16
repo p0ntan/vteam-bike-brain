@@ -14,13 +14,14 @@ class MockEvent:
     def __init__(self, data):
         self.data = json.dumps(data)
 
+
 class MockAsyncIter:
     """ Iteration class needed for mocking aiosseclient """
-    def __init__(self, events):    
-        self.events = events    
+    def __init__(self, events):
+        self.events = events
 
-    async def __aiter__(self):    
-        for event in self.events:    
+    async def __aiter__(self):
+        for event in self.events:
             yield MockEvent(event)
         # After iteration, force the iteration to stop.
         raise StopAsyncIteration
@@ -43,6 +44,7 @@ async def test_run_simulation():
 
     mock_bike.run_simulation.assert_called()
 
+
 @pytest.mark.asyncio
 async def test_lock_bike():
     """ Test to lock the bike with id. """
@@ -63,6 +65,7 @@ async def test_lock_bike():
 
     mock_bike.lock_bike.assert_called()
 
+
 @pytest.mark.asyncio
 async def test_lock_bike_wrong_id():
     """ Test to lock bike with wrong id, not expecting the method to be called. """
@@ -82,6 +85,7 @@ async def test_lock_bike_wrong_id():
         await listen_task
 
     mock_bike.lock_bike.assert_not_called()
+
 
 @pytest.mark.asyncio
 async def test_change_status():

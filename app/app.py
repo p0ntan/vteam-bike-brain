@@ -34,7 +34,7 @@ async def main():
     r_handler = RouteHandler('./routes', interval=interval_in_seconds)
     routes = r_handler.routes
 
-    # Get bike_data from server 
+    # Get bike_data from server
     headers = {'x-api-key': '080d17d62d28f82a97922ce6640a4a03'}
     response = requests.get(f"{base_url}/bikes", headers=headers, timeout=1.5)
     bike_data = response.json()

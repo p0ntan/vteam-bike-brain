@@ -58,7 +58,7 @@ class SSEListener:
             instruction = data.get('instruction')
             action = getattr(self._bike, instruction)
             action(*args)
-    
+
     def stop_listener(self):
         """ Method to stop the listener """
         self._running = False

@@ -25,7 +25,7 @@ class Zone():
         """ int: the speed limit in the zone """
         return self._speed_limit
 
-    def point_in_zone(self, point_coords: list[float, float]):
+    def point_in_zone(self, point_coords: list):
         """ See if a point is inside the zone.
 
         Args:
@@ -61,7 +61,7 @@ class CityZone(Zone):
         """
         self._zones.append(zone)
 
-    def add_zones_list(self, zones: list[Zone]):
+    def add_zones_list(self, zones: list):
         """ Add zones to city.
 
         Args:
