@@ -21,21 +21,27 @@ bike_data = {
 zone_data = {
     'city_id': 'TEST',
     'geometry': {
-        'coordinates': []
+        'coordinates': [
+            []
+        ]
     },
     'speed_limit': 20,
     'zones': [
         {
             'zone_id': 3,
             'geometry': {
-                'coordinates': []
+                'coordinates': [
+                    []
+                ]
             },
             'speed_limit': 0,
         },
         {
             'zone_id': 3,
             'geometry': {
-                'coordinates': []
+                'coordinates': [
+                    []
+                ]
             }
         }
     ]

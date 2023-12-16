@@ -34,7 +34,8 @@ class Bike:
         self._city_zone = None
         self._speed_limit = 20  # Fallback speed limit, speed limit is set automatically by position
         self._simulation = simulation
-        self._api_key = '' if simulation is None else simulation.get('apiKey', '')
+        # API-key needed for bike, should be collected from .env and not a simulation in a real bike.
+        self._api_key = os.environ.get('API_KEY', '') if simulation is None else simulation.get('apiKey', '')
 
         # Intervals in bike, _used_interval is the one that is used in loops
         self._fast_interval = interval  # interval in seconds when bike is moving.
@@ -65,8 +66,8 @@ class Bike:
         """ int: statuscode for the bike """
         return self._status
 
-    def add_zones(self, city_zone_data):
-        """ Method to add zones to bike. Can also be used to 'recache' zones.
+    def add_zones(self, city_zone_data: dict):
+        """ Method to add zones to bike.
 
         Args:
             city_zone_data (dict): data needed for setting up zones
@@ -80,6 +81,27 @@ class Bike:
 
         city_zone.add_zones_list(zones)
         self._city_zone = city_zone
+
+    async def update_zones(self):
+        """ Method to update zones from server.
+
+        Args:
+            city_zone_data (dict): data needed for setting up zones
+        """
+        route = f"/bikes/{self.id}/zones"
+        req_url = self.API_URL + route
+        headers = {'x-api-key': self.api_key}
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(req_url, headers=headers, timeout=5) as response:
+                    if response.status < 300:
+                        city_zone_data = await response.json()
+                        self.add_zones(city_zone_data)
+                    else:
+                        print(f"Errorcode: {response.status}")
+            except asyncio.TimeoutError:
+                pass
 
     def set_status(self, status: int):
         """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
@@ -130,10 +152,10 @@ class Bike:
 
     async def _run_bike(self):
         """ The asynchronous loop in the bike when program is running. """
-        # loop_interval is number of seconds between each loop
-        loop_interval = 2
+        # loop_interval is number of seconds between each loop.
+        loop_interval = self._interval  # TODO Change this to wanted loop time in bike
+
         # count controls each loop iteration. Will be set to same as interval for first loop
-        # to send data at first iteration.
         count = self._interval
         while self._running:
             # This is needed to hold loop if a simulation is running.
@@ -142,7 +164,7 @@ class Bike:
             if self._battery.needs_charging():
                 self.set_status(4)  # 4 is the status for maintenance required
 
-            # self._update_speed_limit()
+            self._update_speed_limit()
 
             # When count is same or bigger as interval, send data to server.
             if count >= self._interval:

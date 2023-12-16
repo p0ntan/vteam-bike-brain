@@ -20,6 +20,7 @@ class BikeFactory:
             self,
             bike_data: dict,
             routes: dict,
+            zones: dict,
             interval: int = 10
             ):
         """ Initialize the bike and inject gps, battery and data """
@@ -28,6 +29,7 @@ class BikeFactory:
 
         for data_item in bike_data:
             bike_id = data_item.get('id')
+            city_id = data_item.get('city_id')
             simulation = None
 
             if bike_id in routes:
@@ -36,6 +38,7 @@ class BikeFactory:
             gps_sim = GpsSimulator(data_item.get('coords'))
             battery_sim = BatterySimulator()
             new_bike = Bike(data_item, battery_sim, gps_sim, simulation, interval)
+            new_bike.add_zones(zones.get(city_id))
 
             self._bikes[bike_id] = new_bike
 
