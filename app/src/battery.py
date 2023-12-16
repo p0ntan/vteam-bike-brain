@@ -43,8 +43,7 @@ class BatterySimulator(BatteryBase):
         old_level = self._level
 
         # Make sure the battery stops at 0
-        if self._level > 0:
-            self._level -= self._level_reduction
+        self._level -= self._level_reduction if self._level > 0 else 0
 
         return old_level
 
@@ -54,6 +53,4 @@ class BatterySimulator(BatteryBase):
         Returns:
             boolean: if battery is low and needs charging
         """
-        if self._level <= 0.15:
-            return True
-        return False
+        return self._level <= 0.15

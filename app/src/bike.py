@@ -34,7 +34,7 @@ class Bike:
         self._city_zone = None
         self._speed_limit = 20  # Fallback speed limit, speed limit is set automatically by position
         self._simulation = simulation
-        # API-key needed for bike, should be collected from .env and not a simulation in a real bike.
+        # API-key needed for bike, should be collected from .env and not a simulation-file in a real bike.
         self._api_key = os.environ.get('API_KEY', '') if simulation is None else simulation.get('apiKey', '')
 
         # Intervals in bike, _used_interval is the one that is used in loops
