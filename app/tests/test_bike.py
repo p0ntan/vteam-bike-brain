@@ -21,21 +21,27 @@ bike_data = {
 zone_data = {
     'city_id': 'TEST',
     'geometry': {
-        'coordinates': []
+        'coordinates': [
+            []
+        ]
     },
     'speed_limit': 20,
     'zones': [
         {
             'zone_id': 3,
             'geometry': {
-                'coordinates': []
+                'coordinates': [
+                    []
+                ]
             },
             'speed_limit': 0,
         },
         {
             'zone_id': 3,
             'geometry': {
-                'coordinates': []
+                'coordinates': [
+                    []
+                ]
             }
         }
     ]
@@ -104,6 +110,7 @@ async def test_start_bike_low_battery():
 
     # Mock methods to isolate test
     # pylint: disable=protected-access
+    bike._interval = 2
     bike._update_bike_data = AsyncMock()
     bike._running = True
 

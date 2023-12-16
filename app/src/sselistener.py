@@ -20,11 +20,14 @@ class SSEListener:
     def __init__(self, bike_instance: Bike, api_url: str):
         self._bike = bike_instance
         self._api_url = api_url
+        self._running = False
 
     async def listen(self):
         """ Start listening to events sent from server. """
-        headers = {'bike_id': str(self._bike.id)}
-        while True:
+        self._running = True
+
+        headers = {'bike_id': str(self._bike.id), 'x-api-key': self._bike.api_key}
+        while self._running:
             try:
                 async for event in aiosseclient(self._api_url, headers=headers):
                     data = json.loads(event.data)
@@ -55,3 +58,7 @@ class SSEListener:
             instruction = data.get('instruction')
             action = getattr(self._bike, instruction)
             action(*args)
+
+    def stop_listener(self):
+        """ Method to stop the listener """
+        self._running = False

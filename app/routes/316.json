@@ -1,0 +1,142 @@
+{
+    "city": 1,
+    "initialStart": [
+        18.00149,
+        59.32864
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": 181.9,
+                "duration": 43.5
+            },
+            "user": {
+                "id": 631,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjMxLCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzODQwOCwiZXhwIjoxNzMyNDc0NDA4fQ.lMQE7I3aPaHoDwvGOwT4ccGSkyDAhp7JmAUMFil-2iA"
+            },
+            "coords": [
+                [
+                    18.00149,
+                    59.32864
+                ],
+                [
+                    18.00141,
+                    59.32877
+                ],
+                [
+                    18.00129,
+                    59.32885
+                ],
+                [
+                    18.00123,
+                    59.32894
+                ],
+                [
+                    18.00136,
+                    59.32907
+                ],
+                [
+                    18.00167,
+                    59.32902
+                ],
+                [
+                    18.00176,
+                    59.32893
+                ],
+                [
+                    18.00191,
+                    59.32882
+                ],
+                [
+                    18.00226,
+                    59.3287
+                ],
+                [
+                    18.00256,
+                    59.32867
+                ],
+                [
+                    18.00262,
+                    59.32873
+                ],
+                [
+                    18.00317,
+                    59.3286
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": 524.5,
+                "duration": 85.8
+            },
+            "user": {
+                "id": 632,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjMyLCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzODQwOCwiZXhwIjoxNzMyNDc0NDA4fQ.lKxeq7qjQHckyNCC2Q35O9jRDylrQJzdCyUNTU9kF3Q"
+            },
+            "coords": [
+                [
+                    18.00317,
+                    59.3286
+                ],
+                [
+                    18.00262,
+                    59.32873
+                ],
+                [
+                    18.00208,
+                    59.32885
+                ],
+                [
+                    18.00196,
+                    59.3289
+                ],
+                [
+                    18.00191,
+                    59.32897
+                ],
+                [
+                    18.002,
+                    59.32912
+                ],
+                [
+                    18.00231,
+                    59.32956
+                ],
+                [
+                    18.00236,
+                    59.32968
+                ],
+                [
+                    18.00278,
+                    59.33028
+                ],
+                [
+                    18.00295,
+                    59.33024
+                ],
+                [
+                    18.00406,
+                    59.32995
+                ],
+                [
+                    18.00513,
+                    59.32971
+                ],
+                [
+                    18.00528,
+                    59.32968
+                ],
+                [
+                    18.00533,
+                    59.32975
+                ],
+                [
+                    18.00604,
+                    59.33077
+                ]
+            ]
+        }
+    ],
+    "apiKey": "09007565836511c90340f1c91268ec5c"
+}

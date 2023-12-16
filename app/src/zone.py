@@ -16,7 +16,8 @@ class Zone():
 
     def __init__(self, data: dict, speed_limit: int = 20):
         """ Constructor """
-        self._coordinates = data.get('coordinates')
+        coords = data.get('geometry')
+        self._coordinates = coords.get('coordinates')[0]
         self._speed_limit = data.get('speed_limit', speed_limit)
 
     @property
@@ -24,7 +25,7 @@ class Zone():
         """ int: the speed limit in the zone """
         return self._speed_limit
 
-    def point_in_zone(self, point_coords: list[float, float]):
+    def point_in_zone(self, point_coords: list):
         """ See if a point is inside the zone.
 
         Args:
@@ -60,13 +61,14 @@ class CityZone(Zone):
         """
         self._zones.append(zone)
 
-    def add_zones_list(self, zones: list[Zone]):
+    def add_zones_list(self, zones: list):
         """ Add zones to city.
 
         Args:
             zones (list): list of zones
         """
-        self._zones = zones
+        for zone in zones:
+            self._zones.append(zone)
 
     def get_speed_limit(self, point):
         """ Loops through all zones and returns the speed limit.

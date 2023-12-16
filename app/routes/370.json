@@ -1,0 +1,114 @@
+{
+    "city": 2,
+    "initialStart": [
+        13.44384,
+        59.38057
+    ],
+    "trips": [
+        {
+            "summary": {
+                "distance": "",
+                "duration": ""
+            },
+            "user": {
+                "id": 739,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzM5LCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzOTczMSwiZXhwIjoxNzMyNDc1NzMxfQ._Qrm58ljKPHyYfLyyJKmRisCla7YrWWScUxO1FVknX8"
+            },
+            "coords": [
+                [
+                    13.44384,
+                    59.38057
+                ],
+                [
+                    13.44401,
+                    59.38076
+                ],
+                [
+                    13.44416,
+                    59.38098
+                ],
+                [
+                    13.4453,
+                    59.38086
+                ],
+                [
+                    13.44534,
+                    59.38095
+                ],
+                [
+                    13.44538,
+                    59.38108
+                ],
+                [
+                    13.44543,
+                    59.38155
+                ],
+                [
+                    13.44549,
+                    59.38177
+                ],
+                [
+                    13.44552,
+                    59.38185
+                ],
+                [
+                    13.44616,
+                    59.38177
+                ]
+            ]
+        },
+        {
+            "summary": {
+                "distance": "",
+                "duration": ""
+            },
+            "user": {
+                "id": 740,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzQwLCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzOTczMSwiZXhwIjoxNzMyNDc1NzMxfQ.2F5jduy8OnVj0MalljtA8ChaFNXGeGr9p6QsJawTcYc"
+            },
+            "coords": [
+                [
+                    13.44616,
+                    59.38177
+                ],
+                [
+                    13.44616,
+                    59.38177
+                ],
+                [
+                    13.44636,
+                    59.38177
+                ],
+                [
+                    13.44642,
+                    59.38179
+                ],
+                [
+                    13.44645,
+                    59.38177
+                ],
+                [
+                    13.44647,
+                    59.38169
+                ],
+                [
+                    13.44643,
+                    59.38169
+                ],
+                [
+                    13.44644,
+                    59.38159
+                ],
+                [
+                    13.44661,
+                    59.38152
+                ],
+                [
+                    13.44661,
+                    59.3811
+                ]
+            ]
+        }
+    ],
+    "apiKey": "67fba881b6f90c3befac65e71f4c187b"
+}
