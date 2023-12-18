@@ -31,7 +31,9 @@ async def main():
     base_url = os.environ.get('API_URL', '')
 
     # Load routes with RouteHandler
-    r_handler = RouteHandler('./routes', interval=interval_in_seconds)
+    base_dir = os.path.dirname(__file__)
+    routes_dir = os.path.join(base_dir, 'routes')
+    r_handler = RouteHandler(routes_dir, interval=interval_in_seconds)
     routes = r_handler.routes
 
     # Get bike_data from server
