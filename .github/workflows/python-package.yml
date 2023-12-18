@@ -39,7 +39,7 @@ jobs:
       run: |
         coverage run -m pytest
         coverage xml
-      working-directory: /app
+      working-directory: ./app
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       env:
