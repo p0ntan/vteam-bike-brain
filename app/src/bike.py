@@ -185,13 +185,13 @@ class Bike:
 
         self._simulation_event_off.set()
 
-    async def _start_renting(self, trip):
-        """ Start renting the bike for a trip. 
-        
+    async def _start_renting(self, trip: dict):
+        """ Start renting the bike for a trip.
+
         Args:
             trip (dict): Data needed for trip with user-jwt and coords.
 
-        Returns:    
+        Returns:
             tuple:
                 - bool: True if the renting process is successful, False otherwise.
                 - int or None: The trip ID if the renting process is successful, None otherwise.
@@ -208,9 +208,9 @@ class Bike:
                     return 'errors' not in response_data, response_data.get('trip_id')
                 return False, None
 
-    async def _simulate_trip(self, trip, trip_id):
+    async def _simulate_trip(self, trip: dict, trip_id: int):
         """ Simulate the trip.
-        
+
         Args:
             trip (dict): Data needed for trip, user-jwt and coords.
             trip_id (int): Trip ID.
@@ -224,8 +224,13 @@ class Bike:
 
         await self._end_renting(trip, trip_id)
 
-    async def _end_renting(self, trip, trip_id):
-        """ End renting the bike after a trip. """
+    async def _end_renting(self, trip: dict, trip_id: int):
+        """ End renting the bike after a trip. 
+
+        Args:
+            trip (dict): Data needed for trip, user-jwt and coords.
+            trip_id (int): Trip ID.
+        """
         req_url = self.API_URL + f"/user/bikes/return/{trip_id}"
         headers, data = self._prepare_request(trip.get('user', {}))
 
@@ -235,9 +240,9 @@ class Bike:
                 # TODO handle response if needed
                 pass
 
-    def _prepare_request(self, user):
-        """ Prepare headers and data for requests. 
-        
+    def _prepare_request(self, user: dict):
+        """ Prepare headers and data for requests.
+
         Args:
             user (dict): Userdata with token and id
         Return:
@@ -251,7 +256,6 @@ class Bike:
         }
         data = {'userId': user.get('id', '')}
         return headers, data
-
 
     async def _update_bike_data(self, data: dict):
         """ Asynchronous method to send data to server.
