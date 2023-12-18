@@ -176,54 +176,82 @@ class Bike:
         if self._simulation is None or not self._simulation_event_off.is_set():
             return
 
-        # Simulation is running/on, setting _simulation_event_off is False
         self._simulation_event_off.clear()
 
-        # Loop through each trip
-        for trip in self._simulation['trips']:
-            req_url = self.API_URL + f"/user/bikes/rent/{self.id}"
-            response_ok = False
-            user = trip.get('user', {})
-
-            # headers and data is added for both renting and returning bike
-            headers = {
-                'x-access-token': user.get('token', ''),
-                'x-api-key': self.api_key
-            }
-            data = {'userId': user.get('id', '')}
-
-            # Send a post-request to start renting the bike, if ok start simulation.
-            # TODO add error handling
-            async with aiohttp.ClientSession() as session:
-                async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
-                    if response.status == 200:
-                        response_data = await response.json()
-                        response_ok = 'errors' not in response_data
-                        trip_id = response_data.get('trip_id')
-                    else:
-                        response_data = await response.json()
-                        print(response_data)
-
+        for trip in self._simulation.get('trips', []):
+            response_ok, trip_id = await self._start_renting(trip)
             if response_ok:
-                # Start looping through the actual trip
-                for position in trip['coords']:
-                    self._gps.position = (position, self._interval)
+                await self._simulate_trip(trip, trip_id)
 
-                    if self._battery.needs_charging():
-                        self.set_status(4)  # 4 is the status for maintenance required
-
-                    await self._update_bike_data(self.get_data())
-                    await asyncio.sleep(self._fast_interval)
-
-                # Change url for returning the bike and then return the bike with
-                req_url = self.API_URL + f"/user/bikes/return/{trip_id}"
-                async with aiohttp.ClientSession() as session:
-                    async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
-                        # TODO handle response if needed
-                        pass
-
-        # Simulation is over, set _simulation_event_off to True
         self._simulation_event_off.set()
+
+    async def _start_renting(self, trip):
+        """ Start renting the bike for a trip. 
+        
+        Args:
+            trip (dict): Data needed for trip with user-jwt and coords.
+
+        Returns:    
+            tuple:
+                - bool: True if the renting process is successful, False otherwise.
+                - int or None: The trip ID if the renting process is successful, None otherwise.
+        """
+        req_url = self.API_URL + f"/user/bikes/rent/{self.id}"
+        user = trip.get('user', {})
+        headers, data = self._prepare_request(user)
+
+        # TODO add error handling
+        async with aiohttp.ClientSession() as session:
+            async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
+                if response.status == 200:
+                    response_data = await response.json()
+                    return 'errors' not in response_data, response_data.get('trip_id')
+                return False, None
+
+    async def _simulate_trip(self, trip, trip_id):
+        """ Simulate the trip.
+        
+        Args:
+            trip (dict): Data needed for trip, user-jwt and coords.
+            trip_id (int): Trip ID.
+        """
+        for position in trip.get('coords', []):
+            self._gps.position = (position, self._interval)
+            if self._battery.needs_charging():
+                self.set_status(4)  # 4 is the status for maintenance required
+            await self._update_bike_data(self.get_data())
+            await asyncio.sleep(self._fast_interval)
+
+        await self._end_renting(trip, trip_id)
+
+    async def _end_renting(self, trip, trip_id):
+        """ End renting the bike after a trip. """
+        req_url = self.API_URL + f"/user/bikes/return/{trip_id}"
+        headers, data = self._prepare_request(trip.get('user', {}))
+
+        # TODO add error handling
+        async with aiohttp.ClientSession() as session:
+            async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
+                # TODO handle response if needed
+                pass
+
+    def _prepare_request(self, user):
+        """ Prepare headers and data for requests. 
+        
+        Args:
+            user (dict): Userdata with token and id
+        Return:
+            tuple:
+                - dict: headers.
+                - dict: data for body.
+        """
+        headers = {
+            'x-access-token': user.get('token', ''),
+            'x-api-key': self.api_key
+        }
+        data = {'userId': user.get('id', '')}
+        return headers, data
+
 
     async def _update_bike_data(self, data: dict):
         """ Asynchronous method to send data to server.
