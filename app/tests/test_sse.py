@@ -2,10 +2,10 @@
 # # -*- coding: UTF-8 -*-
 """ Module for testing the class SSEListener """
 
-import pytest
 import json
 import asyncio
 from unittest.mock import MagicMock, patch
+import pytest
 from src.sselistener import SSEListener
 
 
