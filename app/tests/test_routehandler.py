@@ -9,7 +9,7 @@ from src.routehandler import RouteHandler
 
 def test_init_routehandler():
     """
-    Init routehandler from file in folder containing other files. 
+    Init routehandler from file in folder containing other files.
     Should only load jsonfiles.
     """
     base_dir = os.path.dirname(__file__)
@@ -31,7 +31,7 @@ def test_init_rhandler_wrong_file():
 
 def test_right_distance_50():
     """ Test to see if right amout of extra coords are added.
-    
+
     There are two routes in the testfile, both with only two coordinates.
     First is 500 m and second is 200m.
     """
@@ -48,7 +48,7 @@ def test_right_distance_50():
 
 def test_right_distance_10():
     """ Test to see if right amout of extra coords are added.
-    
+
     There are two routes in the testfile, both with only two coordinates.
     First is 500 m and second is 200m.
     """
@@ -64,7 +64,7 @@ def test_right_distance_10():
 
 def test_right_distance_5():
     """ Test to see if right amout of extra coords are added.
-    
+
     There are two routes in the testfile, both with only two coordinates.
     First is 500 m and second is 200m.
     """

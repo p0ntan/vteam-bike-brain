@@ -11,14 +11,15 @@ class BikeFactory:
     """ Class for creating a bike, aka bike-factory.
 
     Args:
-        bike_data (dict): data used in initialization of the bikes
+        bike_data (list): list with data used for initialization of the bikes
         routes (dict): route-data used for simulation
+        zones (dict): zones for adding to the bike (city and restricted)
         interval (int=10): interval in seconds for simulation (in movement)
     """
 
     def __init__(
             self,
-            bike_data: dict,
+            bike_data: list,
             routes: dict,
             zones: dict,
             interval: int = 10

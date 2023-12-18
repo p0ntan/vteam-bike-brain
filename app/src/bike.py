@@ -225,7 +225,7 @@ class Bike:
         await self._end_renting(trip, trip_id)
 
     async def _end_renting(self, trip: dict, trip_id: int):
-        """ End renting the bike after a trip. 
+        """ End renting the bike after a trip.
 
         Args:
             trip (dict): Data needed for trip, user-jwt and coords.
