@@ -92,7 +92,7 @@ async def test_simulation_five(bike_setup, mock_methods):
             speed = data.get('speed')
             assert speed <= 20
 
-        assert bike.interval == bike.SLOW_INTERVAL
+        assert bike._interval == bike.SLOW_INTERVAL
 
 
 @pytest.mark.asyncio
@@ -117,7 +117,7 @@ async def test_simulation_error_response(bike_setup, mock_methods):
 
     mock_end_renting.assert_not_called()
 
-    assert bike.interval == bike.SLOW_INTERVAL
+    assert bike._interval == bike.SLOW_INTERVAL
 
 
 @pytest.mark.asyncio
@@ -158,4 +158,4 @@ async def test_sim_one_ok_one_error(bike_setup, mock_methods):
             speed = data.get('speed')
             assert speed <= 20
 
-        assert bike.interval == bike.SLOW_INTERVAL
+        assert bike._interval == bike.SLOW_INTERVAL

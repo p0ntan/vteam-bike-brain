@@ -54,11 +54,6 @@ class Bike:
         return self._id
 
     @property
-    def interval(self):
-        """ int: interval for the bike to send data """
-        return self._interval
-
-    @property
     def api_key(self):
         """ str: api_key for the bike. Used by SSE-listener. """
         return self._api_key
