@@ -1,8 +1,8 @@
 {
     "city": 3,
     "initialStart": [
-        11.92118,
-        57.69966
+        11.94554,
+        57.70175
     ],
     "trips": [
         {
@@ -15,38 +15,6 @@
                 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUwNywicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5NTQ0MzYsImV4cCI6MTczMjQ5MDQzNn0.Jdss47S_uX3GCuVQWTZ_xksZEh2dHOwVQXhSWgjvOGY"
             },
             "coords": [
-                [
-                    11.92118,
-                    57.69966
-                ],
-                [
-                    11.92321,
-                    57.70041
-                ],
-                [
-                    11.92751,
-                    57.70131
-                ],
-                [
-                    11.93619,
-                    57.702
-                ],
-                [
-                    11.94193,
-                    57.70139
-                ],
-                [
-                    11.94306,
-                    57.7015
-                ],
-                [
-                    11.94369,
-                    57.70157
-                ],
-                [
-                    11.94514,
-                    57.70172
-                ],
                 [
                     11.94554,
                     57.70175
