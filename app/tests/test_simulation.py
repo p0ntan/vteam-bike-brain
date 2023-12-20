@@ -34,13 +34,15 @@ class MockedResponse:
 
 
 @pytest.fixture
-def mock_bike_methods():
+def mock_methods():
+    """ Fixture to mock methods used in all tests. """
     with patch.object(BikeSimulator, '_end_renting') as mock_end_renting:
         yield mock_end_renting
 
 
 @pytest.fixture
 def bike_setup():
+    """ Fixture to set up bike for each test """
     interval = 5
     base_dir = os.path.dirname(__file__)
     test_directory = os.path.join(base_dir, 'test-data')
@@ -61,9 +63,9 @@ def bike_setup():
 
 
 @pytest.mark.asyncio
-async def test_simulation_five(bike_setup, mock_bike_methods):
+async def test_simulation_five(bike_setup, mock_methods):
     """ Test to run the simulation, with five second interval. """
-    mock_end_renting = mock_bike_methods
+    mock_end_renting = mock_methods
     bike = bike_setup
 
     def post_side_effect(*args, **kwargs):
@@ -94,9 +96,9 @@ async def test_simulation_five(bike_setup, mock_bike_methods):
 
 
 @pytest.mark.asyncio
-async def test_simulation_error_response(bike_setup, mock_bike_methods):
+async def test_simulation_error_response(bike_setup, mock_methods):
     """ Test to run the simulation, with two different error responses. """
-    mock_end_renting = mock_bike_methods
+    mock_end_renting = mock_methods
     bike = bike_setup
 
     def response_generator():
@@ -119,9 +121,9 @@ async def test_simulation_error_response(bike_setup, mock_bike_methods):
 
 
 @pytest.mark.asyncio
-async def test_sim_one_ok_one_error(bike_setup, mock_bike_methods):
+async def test_sim_one_ok_one_error(bike_setup, mock_methods):
     """ Test to run the simulation, with one ok and one error response. """
-    mock_end_renting = mock_bike_methods
+    mock_end_renting = mock_methods
     bike = bike_setup
 
     def response_generator():

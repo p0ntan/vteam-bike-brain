@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Bike module with BikeSimulator (below Bike)
+Bike module
 """
 import os
 import asyncio
@@ -169,6 +169,8 @@ class Bike:
             # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
 
+            print("Det här borde nte synas", self.id)
+
             if self._battery.needs_charging():
                 self.set_status(4)  # 4 is the status for maintenance required
 
@@ -204,7 +206,7 @@ class Bike:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
-                    if response.status > 300:
+                    if response.status >= 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:
                 pass

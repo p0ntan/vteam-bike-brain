@@ -1,23 +1,27 @@
 #!/usr/bin/env python
 """
-Bike module with BikeSimulator (below Bike)
+Class for BikeSimulator
 """
+
+from __future__ import annotations
 import os
 import asyncio
 import aiohttp
+import src.bike as bk
+
 
 class BikeSimulator:
     """
     Class that represents the bikes simulation.
 
     Args:
-        bike (Bike): data for the bike from the database
+        bike (Bike): the Bike to simulate.
         simulation (dict): simulation data needed for simulation.
-        interval (int): interval in seconds for the bike to send data to server when moving, default is 10
+        interval (int): interval in seconds for the bike to send data to server when moving, default is 10.
     """
     API_URL = os.environ.get('API_URL', '')
 
-    def __init__(self, bike, simulation: dict, interval: int):
+    def __init__(self, bike: bk.Bike, simulation: dict, interval: int):
         self._bike = bike
         self._simulation = simulation
         self._interval = interval
@@ -79,12 +83,12 @@ class BikeSimulator:
             trip_id (int): Trip ID.
         """
         req_url = self.API_URL + f"/user/bikes/return/{trip_id}"
-        headers, data = self._prepare_request(trip.get('user', {}))
+        headers, user_data = self._prepare_request(trip.get('user', {}))
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
-                    if response.status > 300:
+                async with session.put(req_url, json=user_data, headers=headers, timeout=5) as response:
+                    if response.status >= 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:
                 pass
