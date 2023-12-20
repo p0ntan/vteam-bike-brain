@@ -10,7 +10,7 @@ multiple classes to work.
 import os
 import pytest
 from unittest.mock import patch
-from src.bike import Bike
+from src.bike import Bike, BikeSimulator
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
 from src.routehandler import RouteHandler
@@ -34,8 +34,8 @@ class MockedResponse:
 
 @pytest.fixture
 def mock_bike_methods():
-    with patch.object(Bike, '_update_bike_data') as mock_update_data, \
-         patch.object(Bike, '_end_renting') as mock_end_renting:
+    with patch.object(Bike, 'update_bike_data') as mock_update_data, \
+         patch.object(BikeSimulator, '_end_renting') as mock_end_renting:
         yield mock_update_data, mock_end_renting
 
 
@@ -88,7 +88,7 @@ async def test_simulation_five(bike_setup, mock_bike_methods):
         arg, _ = arg_tuple
         speed = arg[0].get('speed')
         assert speed <= 20
-    
+
     assert bike.interval == bike.SLOW_INTERVAL
 
 
@@ -99,8 +99,8 @@ async def test_simulation_error_response(bike_setup, mock_bike_methods):
     bike = bike_setup
 
     def response_generator():
-        yield MockedResponse(json_data={'trip_id': 123}, status = 400)
-        yield MockedResponse(json_data={'errors': 'Can\'t rent bike'}, status = 204)
+        yield MockedResponse(json_data={'trip_id': 123}, status=400)
+        yield MockedResponse(json_data={'errors': 'Can\'t rent bike'}, status=204)
 
     response_iter = response_generator()
 
@@ -125,8 +125,8 @@ async def test_sim_one_ok_one_error(bike_setup, mock_bike_methods):
     bike = bike_setup
 
     def response_generator():
-        yield MockedResponse(json_data={'trip_id': 123}, status = 200)
-        yield MockedResponse(json_data={'error': 'Något gick fel'}, status = 400)
+        yield MockedResponse(json_data={'trip_id': 123}, status=200)
+        yield MockedResponse(json_data={'error': 'Något gick fel'}, status=400)
 
     response_iter = response_generator()
 

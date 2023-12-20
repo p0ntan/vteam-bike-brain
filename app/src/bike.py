@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Bike module
+Bike module with BikeSimulator (below Bike)
 """
 import os
 import asyncio
@@ -66,6 +66,16 @@ class Bike:
     def status(self):
         """ int: statuscode for the bike """
         return self._status
+
+    @property
+    def gps(self):
+        """ GpsBase: Returns the GPS-instance for the bike. """
+        return self._gps
+
+    @property
+    def battery(self):
+        """ BatteryBase: Returns the Battery-instance for the bike. """
+        return self._battery
 
     def add_zones(self, city_zone_data: dict):
         """ Method to add zones to bike.
@@ -165,8 +175,7 @@ class Bike:
 
             # When count is same or bigger as interval, send data to server.
             if count >= self._interval:
-                data = self.get_data()
-                await self._update_bike_data(data)
+                await self.update_bike_data()
                 count = 0
 
             await asyncio.sleep(loop_interval)
@@ -179,12 +188,63 @@ class Bike:
 
         self._simulation_event_off.clear()
 
+        simulator = BikeSimulator(self, self._simulation, self._fast_interval)
+        await simulator.start_simulation()
+
+        self._simulation_event_off.set()
+
+    async def update_bike_data(self):
+        """ Asynchronous method to send data to server. """
+        route = f"/bikes/{self.id}"
+        req_url = self.API_URL + route
+        headers = {'x-api-key': self._api_key}
+        data = self.get_data()
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
+                    if response.status > 300:
+                        print(f"Errorcode: {response.status}")
+            except asyncio.TimeoutError:
+                pass
+
+    def start(self):
+        """ Start the bikes program
+
+        Returns:
+            self._run_bike(): Task to run by the SSE-listener
+        """
+        self._running = True
+        return self._run_bike()
+
+    def stop(self):
+        """ Stop the bikes program """
+        self._running = False
+
+
+class BikeSimulator:
+    """
+    Class that represents the bikes simulation.
+
+    Args:
+        bike (Bike): data for the bike from the database
+        simulation (dict): simulation data needed for simulation.
+        interval (int): interval in seconds for the bike to send data to server when moving, default is 10
+    """
+    API_URL = os.environ.get('API_URL', '')
+
+    def __init__(self, bike: Bike, simulation: dict, interval: int):
+        self._bike = bike
+        self._simulation = simulation
+        self._interval = interval
+
+    async def start_simulation(self):
+        """ Asynchronous method to start the simulation for a bike. """
+
         for trip in self._simulation.get('trips', []):
             response_ok, trip_id = await self._start_renting(trip)
             if response_ok:
                 await self._simulate_trip(trip, trip_id)
-
-        self._simulation_event_off.set()
 
     async def _start_renting(self, trip: dict):
         """ Start renting the bike for a trip.
@@ -197,7 +257,7 @@ class Bike:
                 - bool: True if the renting process is successful, False otherwise.
                 - int or None: The trip ID if the renting process is successful, None otherwise.
         """
-        req_url = self.API_URL + f"/user/bikes/rent/{self.id}"
+        req_url = self.API_URL + f"/user/bikes/rent/{self._bike.id}"
         user = trip.get('user', {})
         headers, data = self._prepare_request(user)
 
@@ -219,11 +279,11 @@ class Bike:
             trip_id (int): Trip ID.
         """
         for position in trip.get('coords', []):
-            self._gps.position = (position, self._interval)
-            if self._battery.needs_charging():
-                self.set_status(4)  # 4 is the status for maintenance required
-            await self._update_bike_data(self.get_data())
-            await asyncio.sleep(self._fast_interval)
+            self._bike.gps.position = (position, self._interval)
+            if self._bike.battery.needs_charging():
+                self._bike.set_status(4)  # 4 is the status for maintenance required
+            await self._bike.update_bike_data()
+            await asyncio.sleep(self._interval)
 
         await self._end_renting(trip, trip_id)
 
@@ -257,39 +317,8 @@ class Bike:
         """
         headers = {
             'x-access-token': user.get('token', ''),
-            'x-api-key': self.api_key
+            'x-api-key': self._bike.api_key
         }
         data = {'userId': user.get('id', '')}
 
         return headers, data
-
-    async def _update_bike_data(self, data: dict):
-        """ Asynchronous method to send data to server.
-
-        Args:
-            data (dict): data to send to server
-        """
-        route = f"/bikes/{self.id}"
-        req_url = self.API_URL + route
-        headers = {'x-api-key': self._api_key}
-
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
-                    if response.status > 300:
-                        print(f"Errorcode: {response.status}")
-            except asyncio.TimeoutError:
-                pass
-
-    def start(self):
-        """ Start the bikes program
-
-        Returns:
-            self._run_bike(): Task to run by the SSE-listener
-        """
-        self._running = True
-        return self._run_bike()
-
-    def stop(self):
-        """ Stop the bikes program """
-        self._running = False
