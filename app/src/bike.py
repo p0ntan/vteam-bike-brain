@@ -34,8 +34,9 @@ class Bike:
         self._city_zone = None
         self._speed_limit = 20  # Fallback speed limit, speed limit is set automatically by position
         self._simulation = simulation
+
         # API-key needed for bike, should be collected from .env and not a simulation-file in a real bike.
-        self._api_key = os.environ.get('API_KEY') if os.environ.get('API_KEY') else simulation.get('apiKey', '')
+        self._api_key = os.environ.get('API_KEY') if simulation is None else simulation.get('apiKey', '')
 
         # Intervals in bike, _used_interval is the one that is used in loops
         self._fast_interval = interval  # interval in seconds when bike is moving.
@@ -200,7 +201,6 @@ class Bike:
         user = trip.get('user', {})
         headers, data = self._prepare_request(user)
 
-        # TODO add error handling
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
@@ -260,6 +260,7 @@ class Bike:
             'x-api-key': self.api_key
         }
         data = {'userId': user.get('id', '')}
+
         return headers, data
 
     async def _update_bike_data(self, data: dict):
