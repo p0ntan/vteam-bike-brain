@@ -28,6 +28,42 @@
                     59.379297514164676
                 ]
             ]
+        },
+        {
+            "summary": {
+                "distance": 526.3,
+                "duration": 86.1
+            },
+            "user": {
+                "id": 5,
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDA5Mjk0MzEsImV4cCI6MTczMjQ2NTQzMX0.bj3DYaRxn-Wz0dxvNgiRnhx85OiWJ8Oy3AlfKX3fdfo"
+            },
+            "coords": [
+                [
+                    13.49696088248595,
+                    59.379297514164676
+                ],
+                [
+                    13.496813914512927,
+                    59.37929937042088
+                ],
+                [
+                    13.49687569628901,
+                    59.37963923060832
+                ],
+                [
+                    13.496925121709552,
+                    59.37971895040616
+                ],
+                [
+                    13.4970033786268,
+                    59.38012593803185
+                ],
+                [
+                    13.497056623584882,
+                    59.38032945724018
+                ]
+            ]
         }
     ]
 }
