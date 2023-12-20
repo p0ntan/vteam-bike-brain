@@ -36,7 +36,7 @@ class Bike:
         self._simulation = simulation
 
         # API-key needed for bike, should be collected from .env and not a simulation-file in a real bike.
-        self._api_key = os.environ.get('API_KEY') or simulation.get('apiKey', '')
+        self._api_key = os.environ.get('API_KEY') if simulation is None else simulation.get('apiKey', '')
 
         # Intervals in bike, _used_interval is the one that is used in loops
         self._fast_interval = interval  # interval in seconds when bike is moving.
