@@ -7,7 +7,6 @@ from __future__ import annotations
 import os
 import asyncio
 import aiohttp
-import src.bike as bk
 
 
 class BikeSimulator:
@@ -21,7 +20,7 @@ class BikeSimulator:
     """
     API_URL = os.environ.get('API_URL', '')
 
-    def __init__(self, bike: bk.Bike, simulation: dict, interval: int):
+    def __init__(self, bike, simulation: dict, interval: int):
         self._bike = bike
         self._simulation = simulation
         self._interval = interval
