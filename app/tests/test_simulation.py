@@ -2,6 +2,9 @@
 # -*- coding: UTF-8 -*-
 """
 Module for testing the simulation.
+
+This is more of an integration test since since the simulation is using
+multiple classes to work.
 """
 
 import os
@@ -13,16 +16,31 @@ from src.gps import GpsSimulator
 from src.routehandler import RouteHandler
 
 
+class MockedResponse:
+    """ Class used as mocking repsonse from server when using aiohttp. """
+    def __init__(self, json_data, status):
+        self._json_data = json_data
+        self.status = status
+
+    async def json(self):
+        return self._json_data
+
+    async def __aexit__(self, exc_type, exc, tb):
+        pass
+
+    async def __aenter__(self):
+        return self
+
+
 @pytest.fixture
 def mock_bike_methods():
-    with patch.object(Bike, '_start_renting') as mock_start_renting, \
-         patch.object(Bike, '_update_bike_data') as mock_update_data, \
+    with patch.object(Bike, '_update_bike_data') as mock_update_data, \
          patch.object(Bike, '_end_renting') as mock_end_renting:
-        yield mock_start_renting, mock_update_data, mock_end_renting
+        yield mock_update_data, mock_end_renting
 
 
 @pytest.fixture
-def bike_setup_five():
+def bike_setup():
     interval = 5
     base_dir = os.path.dirname(__file__)
     test_directory = os.path.join(base_dir, 'test-data')
@@ -43,26 +61,26 @@ def bike_setup_five():
 
 
 @pytest.mark.asyncio
-async def test_simulation_five(bike_setup_five, mock_bike_methods):
+async def test_simulation_five(bike_setup, mock_bike_methods):
     """ Test to run the simulation, with five second interval. """
-    mock_start_renting, mock_update_data, mock_end_renting = mock_bike_methods
-    bike = bike_setup_five
+    mock_update_data, mock_end_renting = mock_bike_methods
+    bike = bike_setup
 
-    # Adding side_effects to change status, this is done from the server
-    # through an SSE in the simulation.
-    def start_renting_side_effect(*args, **kwargs):
+    def post_side_effect(*args, **kwargs):
+        response = MockedResponse(json_data={'trip_id': 123}, status=200)
         bike.set_status(2)
-        return True, 1
+        return response
 
     def end_renting_side_effect(*args, **kwargs):
         bike.set_status(1)
 
-    mock_start_renting.side_effect = start_renting_side_effect
+    # mock_start_renting.side_effect = start_renting_side_effect
     mock_end_renting.side_effect = end_renting_side_effect
 
-    await bike.run_simulation()
+    with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
+        await bike.run_simulation()
 
-    mock_start_renting.assert_called()
+    # mock_start_renting.assert_called()
     mock_end_renting.assert_called()
 
     data_args = mock_update_data.call_args_list
@@ -70,21 +88,24 @@ async def test_simulation_five(bike_setup_five, mock_bike_methods):
         arg, _ = arg_tuple
         speed = arg[0].get('speed')
         assert speed <= 20
+    
+    assert bike.interval == bike.SLOW_INTERVAL
 
 
 @pytest.mark.asyncio
-async def test_simulation_error_response(bike_setup_five, mock_bike_methods):
+async def test_simulation_error_response(bike_setup, mock_bike_methods):
     """ Test to run the simulation, with error from server when starting trip. """
-    mock_start_renting, mock_update_data, mock_end_renting = mock_bike_methods
-    bike = bike_setup_five
+    mock_update_data, mock_end_renting = mock_bike_methods
+    bike = bike_setup
 
-    def start_renting_side_effect(*args, **kwargs):
-        return False, None
+    def post_side_effect(*args, **kwargs):
+        response = MockedResponse(json_data={'errors': 'Cannot rent bike'}, status=400)
+        return response
 
-    mock_start_renting.side_effect = start_renting_side_effect
+    with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
+        await bike.run_simulation()
 
-    await bike.run_simulation()
-
-    mock_start_renting.assert_called()
     mock_end_renting.assert_not_called()
     mock_update_data.assert_not_called()
+
+    assert bike.interval == bike.SLOW_INTERVAL

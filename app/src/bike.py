@@ -35,7 +35,7 @@ class Bike:
         self._speed_limit = 20  # Fallback speed limit, speed limit is set automatically by position
         self._simulation = simulation
         # API-key needed for bike, should be collected from .env and not a simulation-file in a real bike.
-        self._api_key = os.environ.get('API_KEY', '') if simulation is None else simulation.get('apiKey', '')
+        self._api_key = os.environ.get('API_KEY') if os.environ.get('API_KEY') else simulation.get('apiKey', '')
 
         # Intervals in bike, _used_interval is the one that is used in loops
         self._fast_interval = interval  # interval in seconds when bike is moving.
@@ -202,10 +202,13 @@ class Bike:
 
         # TODO add error handling
         async with aiohttp.ClientSession() as session:
-            async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
-                if response.status == 200:
-                    response_data = await response.json()
-                    return 'errors' not in response_data, response_data.get('trip_id')
+            try:
+                async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
+                    if response.status < 300:
+                        response_data = await response.json()
+                        return 'errors' not in response_data, response_data.get('trip_id')
+                    return False, None
+            except asyncio.TimeoutError:
                 return False, None
 
     async def _simulate_trip(self, trip: dict, trip_id: int):
@@ -234,10 +237,12 @@ class Bike:
         req_url = self.API_URL + f"/user/bikes/return/{trip_id}"
         headers, data = self._prepare_request(trip.get('user', {}))
 
-        # TODO add error handling
         async with aiohttp.ClientSession() as session:
-            async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
-                # TODO handle response if needed
+            try:
+                async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
+                    if response.status > 300:
+                        print(f"Errorcode: {response.status}")
+            except asyncio.TimeoutError:
                 pass
 
     def _prepare_request(self, user: dict):
