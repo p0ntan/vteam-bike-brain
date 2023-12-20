@@ -94,12 +94,19 @@ async def test_simulation_five(bike_setup, mock_bike_methods):
 
 @pytest.mark.asyncio
 async def test_simulation_error_response(bike_setup, mock_bike_methods):
-    """ Test to run the simulation, with error from server when starting trip. """
+    """ Test to run the simulation, with two different error responses. """
     mock_update_data, mock_end_renting = mock_bike_methods
     bike = bike_setup
 
+    def response_generator():
+        yield MockedResponse(json_data={'trip_id': 123}, status = 400)
+        yield MockedResponse(json_data={'errors': 'Can\'t rent bike'}, status = 204)
+
+    response_iter = response_generator()
+
     def post_side_effect(*args, **kwargs):
-        response = MockedResponse(json_data={'errors': 'Cannot rent bike'}, status=400)
+        response = next(response_iter)
+
         return response
 
     with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
@@ -107,5 +114,43 @@ async def test_simulation_error_response(bike_setup, mock_bike_methods):
 
     mock_end_renting.assert_not_called()
     mock_update_data.assert_not_called()
+
+    assert bike.interval == bike.SLOW_INTERVAL
+
+
+@pytest.mark.asyncio
+async def test_sim_one_ok_one_error(bike_setup, mock_bike_methods):
+    """ Test to run the simulation, with one ok and one error response. """
+    mock_update_data, mock_end_renting = mock_bike_methods
+    bike = bike_setup
+
+    def response_generator():
+        yield MockedResponse(json_data={'trip_id': 123}, status = 200)
+        yield MockedResponse(json_data={'error': 'Något gick fel'}, status = 400)
+
+    response_iter = response_generator()
+
+    def post_side_effect(*args, **kwargs):
+        response = next(response_iter)
+        if response.status == 200:
+            bike.set_status(2)
+
+        return response
+
+    def end_renting_side_effect(*args, **kwargs):
+        bike.set_status(1)
+
+    mock_end_renting.side_effect = end_renting_side_effect
+
+    with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
+        await bike.run_simulation()
+
+    mock_end_renting.assert_called_once()
+
+    data_args = mock_update_data.call_args_list
+    for arg_tuple in data_args:
+        arg, _ = arg_tuple
+        speed = arg[0].get('speed')
+        assert speed <= 20
 
     assert bike.interval == bike.SLOW_INTERVAL
