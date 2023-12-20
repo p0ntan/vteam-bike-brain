@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """ Module for testing the class BikeFactory """
 
-from unittest import mock
+from unittest.mock import patch
 from src.bike import Bike
 from src.bikefactory import BikeFactory
 
@@ -18,7 +18,7 @@ def test_bikefactory():
         }
     ]
 
-    with mock.patch('src.bike.Bike.add_zones') as mock_add_zones:
+    with patch('src.bike.Bike.add_zones') as mock_add_zones:
         b_factory = BikeFactory(bike_data, routes={}, zones={})
         bikes = b_factory.bikes
 
