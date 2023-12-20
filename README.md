@@ -11,6 +11,8 @@ Set up the repo with:
 ./setup.bash up
 ```
 
+In the container tests and linters can be executed with pytest, pytlint or flake8. But the program (app.py) itself is depending on the server to be running and won't work without it.
+
 ## Teardown
 This will start a container and keep it in the shell. To remove images when container is closed, run:
 ```
