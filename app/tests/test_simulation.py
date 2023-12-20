@@ -10,7 +10,8 @@ multiple classes to work.
 import os
 import pytest
 from unittest.mock import patch
-from src.bike import Bike, BikeSimulator
+from src.bike import Bike
+from src.bikesimulator import BikeSimulator
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
 from src.routehandler import RouteHandler
@@ -34,9 +35,8 @@ class MockedResponse:
 
 @pytest.fixture
 def mock_bike_methods():
-    with patch.object(Bike, 'update_bike_data') as mock_update_data, \
-         patch.object(BikeSimulator, '_end_renting') as mock_end_renting:
-        yield mock_update_data, mock_end_renting
+    with patch.object(BikeSimulator, '_end_renting') as mock_end_renting:
+        yield mock_end_renting
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ def bike_setup():
 @pytest.mark.asyncio
 async def test_simulation_five(bike_setup, mock_bike_methods):
     """ Test to run the simulation, with five second interval. """
-    mock_update_data, mock_end_renting = mock_bike_methods
+    mock_end_renting = mock_bike_methods
     bike = bike_setup
 
     def post_side_effect(*args, **kwargs):
@@ -74,28 +74,29 @@ async def test_simulation_five(bike_setup, mock_bike_methods):
     def end_renting_side_effect(*args, **kwargs):
         bike.set_status(1)
 
-    # mock_start_renting.side_effect = start_renting_side_effect
     mock_end_renting.side_effect = end_renting_side_effect
 
-    with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
-        await bike.run_simulation()
+    with patch('aiohttp.ClientSession.put') as mock_put:
+        mock_put.return_value = MockedResponse(json_data={'msg': 'ok'}, status=200)
 
-    # mock_start_renting.assert_called()
-    mock_end_renting.assert_called()
+        with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
+            await bike.run_simulation()
 
-    data_args = mock_update_data.call_args_list
-    for arg_tuple in data_args:
-        arg, _ = arg_tuple
-        speed = arg[0].get('speed')
-        assert speed <= 20
+        mock_end_renting.assert_called()
 
-    assert bike.interval == bike.SLOW_INTERVAL
+        for call in mock_put.call_args_list:
+            _, kwargs = call
+            data = kwargs.get('json')
+            speed = data.get('speed')
+            assert speed <= 20
+
+        assert bike.interval == bike.SLOW_INTERVAL
 
 
 @pytest.mark.asyncio
 async def test_simulation_error_response(bike_setup, mock_bike_methods):
     """ Test to run the simulation, with two different error responses. """
-    mock_update_data, mock_end_renting = mock_bike_methods
+    mock_end_renting = mock_bike_methods
     bike = bike_setup
 
     def response_generator():
@@ -113,7 +114,6 @@ async def test_simulation_error_response(bike_setup, mock_bike_methods):
         await bike.run_simulation()
 
     mock_end_renting.assert_not_called()
-    mock_update_data.assert_not_called()
 
     assert bike.interval == bike.SLOW_INTERVAL
 
@@ -121,7 +121,7 @@ async def test_simulation_error_response(bike_setup, mock_bike_methods):
 @pytest.mark.asyncio
 async def test_sim_one_ok_one_error(bike_setup, mock_bike_methods):
     """ Test to run the simulation, with one ok and one error response. """
-    mock_update_data, mock_end_renting = mock_bike_methods
+    mock_end_renting = mock_bike_methods
     bike = bike_setup
 
     def response_generator():
@@ -142,15 +142,18 @@ async def test_sim_one_ok_one_error(bike_setup, mock_bike_methods):
 
     mock_end_renting.side_effect = end_renting_side_effect
 
-    with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
-        await bike.run_simulation()
+    with patch('aiohttp.ClientSession.put') as mock_put:
+        mock_put.return_value = MockedResponse(json_data={'msg': 'ok'}, status=200)
 
-    mock_end_renting.assert_called_once()
+        with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
+            await bike.run_simulation()
 
-    data_args = mock_update_data.call_args_list
-    for arg_tuple in data_args:
-        arg, _ = arg_tuple
-        speed = arg[0].get('speed')
-        assert speed <= 20
+        mock_end_renting.assert_called_once()
 
-    assert bike.interval == bike.SLOW_INTERVAL
+        for call in mock_put.call_args_list:
+            _, kwargs = call
+            data = kwargs.get('json')
+            speed = data.get('speed')
+            assert speed <= 20
+
+        assert bike.interval == bike.SLOW_INTERVAL
