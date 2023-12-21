@@ -164,8 +164,6 @@ class Bike:
             # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
 
-            print("Det här borde nte synas", self.id)
-
             if self._battery.needs_charging():
                 self.set_status(4)  # 4 is the status for maintenance required
 
