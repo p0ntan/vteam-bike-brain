@@ -101,6 +101,7 @@ class Bike:
                     if response.status < 300:
                         city_zone_data = await response.json()
                         self.add_zones(city_zone_data)
+                        self._city_id = city_zone_data.get('city_id')
                     else:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:
@@ -108,33 +109,48 @@ class Bike:
 
     def set_status(self, status: int):
         """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
+        Possible statuscodes:
+            1	available
+            2	rented
+            3	in maintenance
+            4	maintenance required
+            5	rented maintenance required
 
         Args:
             status (int): new status for the bike
         """
         if status == 1:
-            # Control to not set the status to 1 when maintenance required (low battery)
-            status = 4 if self._battery.needs_charging() else status
+            # Control to not set the status to 1 when maintenance required after rentperiod
+            status = 4 if self._status in [4, 5] else status
             self._interval = self.SLOW_INTERVAL
         elif status == 2:
             # Change to faster interval when bike is rented, status 2
             self._interval = self._fast_interval
+        elif status == 4:
+            # If maintenance is required and bike is rented (unlocked), use status 5
+            status = 5 if self.is_unlocked() else status
         self._status = status
 
+    def is_unlocked(self):
+        """
+        Method to see if a bike is unlocked to be used by internal parts in bike.
+        Ex. for the accelerator to work or a light for showing a user that the bike is unlocked.
+        """
+        return self._active and self._status in [2, 5]  # status 2 and 5 used when bike is rented.
+
     def lock_bike(self):
-        """ Locks the bike by changing active to False and sets speed limit to zero """
-        self._speed_limit = 0
+        """ Deactivate the bike by changing active to False  """
         self._active = False
+        self.set_status(1)
 
     def unlock_bike(self):
-        """ Unlocks the bike by changing active to True """
+        """ Activate the bike by changing active to True """
         self._active = True
-        self._update_speed_limit()
 
     def _update_speed_limit(self):
         """ Updates the speedlimit for the bike. """
-        # Only update speedlimit if bike is active/unlocked.
-        if self._active and self._city_zone is not None:
+        # Only update speedlimit if there is a cityzone in bike.
+        if self._city_zone is not None:
             position = self._gps.position
             self._speed_limit = self._city_zone.get_speed_limit(position)
 

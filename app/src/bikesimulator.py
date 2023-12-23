@@ -3,7 +3,7 @@
 Class for BikeSimulator
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 import os
 import asyncio
 import aiohttp
@@ -68,7 +68,7 @@ class BikeSimulator:
         for position in trip.get('coords', []):
             self._bike.gps.position = (position, self._interval)
             if self._bike.battery.needs_charging():
-                self._bike.set_status(4)  # 4 is the status for maintenance required
+                self._bike.set_status(5)  # 5 is the status for 'rented maintenance required'
             await self._bike.update_bike_data()
             await asyncio.sleep(self._interval)
 

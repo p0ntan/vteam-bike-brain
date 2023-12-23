@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+# pylint: disable=protected-access
+
 """ Module for testing the class Bike """
 
 import asyncio
@@ -91,7 +93,6 @@ def test_moving_bike():
     interval_in_seconds = 10
 
     # Forcing new position on private variable, disableing pylint for this action
-    # pylint: disable=protected-access
     bike_instance._gps.position = (new_position, interval_in_seconds)
     data_from_bike = bike_instance.get_data()
 
@@ -100,8 +101,8 @@ def test_moving_bike():
 
 
 @pytest.mark.asyncio
-async def test_start_bike_low_battery():
-    """ Test to see if status changes if battery gets to low """
+async def test_start_low_battery_locked():
+    """ Test to see if status changes if battery gets to low, bike standing still. """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
     battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True])
@@ -109,14 +110,13 @@ async def test_start_bike_low_battery():
     bike = Bike(bike_data, battery_sim, gps_sim)
 
     # Mock methods to isolate test
-    # pylint: disable=protected-access
     bike._interval = 2
     bike.update_bike_data = AsyncMock()
     bike._running = True
 
     async def stop_bike_after_5_seconds():
         await asyncio.sleep(5)
-        # pylint: disable=protected-access
+
         bike._running = False
 
     # Check that status is 1 when starting bike
@@ -133,44 +133,103 @@ async def test_start_bike_low_battery():
     assert bike.status == 4
 
 
-def test_change_status_low_battery():
-    """ Trying to change status when battery i low. """
+@pytest.mark.asyncio
+async def test_start_low_battery_unlocked():
+    """ Test to see if status changes if battery gets to low, while rented. """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
-    battery_sim.needs_charging = MagicMock(return_value=True)
+    battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True])
 
     bike = Bike(bike_data, battery_sim, gps_sim)
-    assert bike.status == 1
 
-    bike.set_status(4)
-    assert bike.status == 4
+    # Mock methods to isolate test
+    bike._interval = 2
+    bike.update_bike_data = AsyncMock()
+    bike._running = True
+
+    async def stop_bike_after_5_seconds():
+        await asyncio.sleep(5)
+
+        bike._running = False
+
+    # Check that status is 1 when starting bike
+    bike._status = 2  # Status 2 for rented
+    assert bike.status == 2
+
+    # Run bike.start() and stop after 5 seconds
+    await asyncio.gather(
+        bike.start(),
+        stop_bike_after_5_seconds()
+    )
+
+    # Control that needs_charging has run three times and status has changed
+    assert bike._battery.needs_charging.call_count == 3
+    assert bike.status == 5
+
+
+def test_change_status_low_battery():
+    """ Trying to change status when battery i low and bike is rented. """
+    gps_sim = MagicMock()
+    battery_sim = MagicMock()
+
+    bike = Bike(bike_data, battery_sim, gps_sim)
+    bike._status = 2  # Status 2 for rented
+    assert bike.status == 2
+
+    bike.set_status(5)  # Status 5 for rented maintenance required
+    assert bike.status == 5
 
     bike.set_status(1)  # Should stay at 4 since low battery
     assert bike.status == 4
 
 
-def test_lock_unlock_bike():
-    """ Trying to lock and unlock bike. """
+def test_deact_act_rented_bike():
+    """ Trying to deactivate a rented bike, then activate it. """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
     bike = Bike(bike_data, battery_sim, gps_sim)
-    # pylint: disable=protected-access
-    bike._city_zone = MagicMock()
-    bike._city_zone.get_speed_limit = MagicMock(return_value=20)
+
+    assert bike.is_unlocked() is False
+
+    bike._status = 2  # Bike is rented with status 2
 
     assert bike._active is True
+    assert bike.is_unlocked() is True
 
     bike.lock_bike()
 
-    # pylint: disable=protected-access
     assert bike._active is False
-    assert bike._speed_limit == 0
+    assert bike.is_unlocked() is False
 
     bike.unlock_bike()
 
-    # pylint: disable=protected-access
     assert bike._active is True
-    assert bike._speed_limit == 20
+    assert bike.is_unlocked() is False
+    assert bike.status == 1
+
+
+def test_deact_rented_maintenance():
+    """ Trying to deactivate a rented bike needing maintenance. """
+    gps_sim = MagicMock()
+    battery_sim = MagicMock()
+    bike = Bike(bike_data, battery_sim, gps_sim)
+    assert bike.is_unlocked() is False
+
+    bike.set_status(5)  # Bike is rented with status 5 maintenance required
+
+    assert bike._active is True
+    assert bike.is_unlocked() is True
+
+    bike.lock_bike()
+
+    assert bike._active is False
+    assert bike.is_unlocked() is False
+
+    bike.unlock_bike()
+
+    assert bike._active is True
+    assert bike.is_unlocked() is False
+    assert bike.status == 4  # Maintenance required
 
 
 def test_no_city_zone():
@@ -179,7 +238,6 @@ def test_no_city_zone():
     battery_sim = MagicMock()
     bike = Bike(bike_data, battery_sim, gps_sim)
 
-    # pylint: disable=protected-access
     bike._update_speed_limit()
     assert bike._speed_limit == 20
 
@@ -191,7 +249,6 @@ def test_load_zone_data():
     bike = Bike(bike_data, battery_sim, gps_sim)
     bike.add_zones(zone_data)  # Data at the top of file
 
-    # pylint: disable=protected-access
     city_zone = bike._city_zone
     forbidden_zone = city_zone._zones[0]
     zone_without_limit = city_zone._zones[1]
