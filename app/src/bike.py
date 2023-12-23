@@ -121,7 +121,7 @@ class Bike:
         """
         if status == 1:
             # Control to not set the status to 1 when maintenance required after rentperiod
-            status = 4 if self._status in [4, 5] else status
+            status = 4 if self._status in {4, 5} else status
             self._interval = self.SLOW_INTERVAL
         elif status == 2:
             # Change to faster interval when bike is rented, status 2
@@ -136,7 +136,7 @@ class Bike:
         Method to see if a bike is unlocked to be used by internal parts in bike.
         Ex. for the accelerator to work or a light for showing a user that the bike is unlocked.
         """
-        return self._active and self._status in [2, 5]  # status 2 and 5 used when bike is rented.
+        return self._active and self._status in {2, 5}  # status 2 and 5 used when bike is rented.
 
     def lock_bike(self):
         """ Deactivate the bike by changing active to False  """

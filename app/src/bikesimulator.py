@@ -3,7 +3,7 @@
 Class for BikeSimulator
 """
 
-# from __future__ import annotations
+from __future__ import annotations
 import os
 import asyncio
 import aiohttp
@@ -16,11 +16,11 @@ class BikeSimulator:
     Args:
         bike (Bike): the Bike to simulate.
         simulation (dict): simulation data needed for simulation.
-        interval (int): interval in seconds for the bike to send data to server when moving, default is 10.
+        interval (int): interval in seconds for the bike to send data to server when moving.
     """
     API_URL = os.environ.get('API_URL', '')
 
-    def __init__(self, bike, simulation: dict, interval: int):
+    def __init__(self, bike: 'Bike', simulation: dict, interval: int):
         self._bike = bike
         self._simulation = simulation
         self._interval = interval

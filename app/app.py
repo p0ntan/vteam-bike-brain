@@ -13,6 +13,7 @@ from src.sselistener import SSEListener
 
 # TODO fixa med kommentarer, dela upp i två olika filer för sim och enskild cykel.
 
+
 async def main():
     """ Main program to start up all bikes for simulation.
 
