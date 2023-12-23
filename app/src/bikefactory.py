@@ -2,6 +2,8 @@
 """
 Bikefactory module, used for creating each bike with injections
 """
+
+# import random
 from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
@@ -31,10 +33,8 @@ class BikeFactory:
         for data_item in bike_data:
             bike_id = data_item.get('id')
             city_id = data_item.get('city_id')
-            simulation = None
-
-            if bike_id in routes:
-                simulation = routes[bike_id]
+            simulation = routes[bike_id] if bike_id in routes else None
+            # battery_level = round(random.uniform(0.5, 1),2)
 
             gps_sim = GpsSimulator(data_item.get('coords'))
             battery_sim = BatterySimulator()
