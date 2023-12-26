@@ -31,6 +31,7 @@ class BikeSimulator:
         for trip in self._simulation.get('trips', []):
             response_ok, trip_id = await self._start_renting(trip)
             if response_ok:
+                self._bike.set_status(2)  # This also is done through SSE, but isn't fast enough for simulation
                 await self._simulate_trip(trip, trip_id)
 
     async def _start_renting(self, trip: dict):
@@ -67,11 +68,28 @@ class BikeSimulator:
         """
         for position in trip.get('coords', []):
             self._bike.gps.position = (position, self._interval)
-            if self._bike.battery.needs_charging():
+
+            # TODO this can be changed (removed), but needs to be locked from the server when battery is low
+            if self._bike.battery.low_battery():  # Low is <= 0.03
+                self._bike.set_status(1)
+                # self._bike.lock_bike()
+            elif self._bike.battery.needs_charging():  # <= 0.15
                 self._bike.set_status(5)  # 5 is the status for 'rented maintenance required'
+
             await self._bike.update_bike_data()
             await asyncio.sleep(self._interval)
 
+            # If a bike is locked by any reason, stop simulation and set speed to 0.
+            # And make a last update to server with the newest data.
+            if not self._bike.is_unlocked():
+                self._bike.gps.speed = 0
+                await self._bike.update_bike_data()
+                return
+
+        # After each simulatioed trip, set speed to zero.
+        self._bike.gps.speed = 0
+
+        # Ending a trip should only be done when a trip has come to the last coords
         await self._end_renting(trip, trip_id)
 
     async def _end_renting(self, trip: dict, trip_id: int):

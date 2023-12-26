@@ -193,17 +193,10 @@ def test_deact_act_rented_bike():
 
     bike._status = 2  # Bike is rented with status 2
 
-    assert bike._active is True
     assert bike.is_unlocked() is True
 
     bike.lock_bike()
 
-    assert bike._active is False
-    assert bike.is_unlocked() is False
-
-    bike.unlock_bike()
-
-    assert bike._active is True
     assert bike.is_unlocked() is False
     assert bike.status == 1
 
@@ -217,17 +210,10 @@ def test_deact_rented_maintenance():
 
     bike.set_status(5)  # Bike is rented with status 5 maintenance required
 
-    assert bike._active is True
     assert bike.is_unlocked() is True
 
     bike.lock_bike()
 
-    assert bike._active is False
-    assert bike.is_unlocked() is False
-
-    bike.unlock_bike()
-
-    assert bike._active is True
     assert bike.is_unlocked() is False
     assert bike.status == 4  # Maintenance required
 

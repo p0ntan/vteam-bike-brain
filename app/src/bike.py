@@ -26,7 +26,6 @@ class Bike:
     SLOW_INTERVAL = 30
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
-        self._active = data.get('active', True)
         self._status = data.get('status_id')
         self._city_id = data.get('city_id')
         self._id = data.get('id')
@@ -43,7 +42,7 @@ class Bike:
         self._fast_interval = interval  # interval in seconds when bike is moving.
         self._interval = self.SLOW_INTERVAL  # interval that is used in loops, is changing when bike is running.
 
-        # Bike needs to be started by metod start(). When simulation is over the simulation event is set
+        # Bike needs to be started by metod start(). When simulation is over the simulation event is set to True
         self._running = False
         self._simulation_event_off = asyncio.Event()
         self._simulation_event_off.set()  # This sets the event to true, meaning simulation is NOT running
@@ -120,7 +119,7 @@ class Bike:
             status (int): new status for the bike
         """
         if status == 1:
-            # Control to not set the status to 1 when maintenance required after rentperiod
+            # Control to not set the status to 1 when maintenance required
             status = 4 if self._status in {4, 5} else status
             self._interval = self.SLOW_INTERVAL
         elif status == 2:
@@ -132,20 +131,23 @@ class Bike:
         self._status = status
 
     def is_unlocked(self):
-        """
-        Method to see if a bike is unlocked to be used by internal parts in bike.
+        """ Method to see if a bike is unlocked to be used by internal parts in bike.
+
         Ex. for the accelerator to work or a light for showing a user that the bike is unlocked.
         """
-        return self._active and self._status in {2, 5}  # status 2 and 5 used when bike is rented.
+        # status 2 and 5 used when bike is rented, is the same as an unlocked bike.
+        return self._status in {2, 5}
 
     def lock_bike(self):
-        """ Deactivate the bike by changing active to False  """
-        self._active = False
+        """ Lock the bike by changing status to 1. """
+        # TODO ta bort eller byt sätt att låsa cykel
         self.set_status(1)
 
     def unlock_bike(self):
-        """ Activate the bike by changing active to True """
-        self._active = True
+        """ Unlock the bike by changing status to 2. """
+        # TODO byt ut sätt att låsa upp cykel eller ta bort metoden
+        # self.set_status(2)
+        pass  # Pass for now, since used when activating a bike.
 
     def _update_speed_limit(self):
         """ Updates the speedlimit for the bike. """
@@ -171,7 +173,8 @@ class Bike:
 
     async def _run_bike(self):
         """ The asynchronous loop in the bike when program is running. """
-        # loop_interval is number of seconds between each loop.
+        # loop_interval is number of seconds between each loop. Should be a low number for frequent
+        # controls of position.
         loop_interval = self._interval  # TODO Change this to wanted loop time in bike
 
         # count controls each loop iteration. Will be set to same as interval for first loop
@@ -180,8 +183,20 @@ class Bike:
             # This is needed to hold loop if a simulation is running.
             await self._simulation_event_off.wait()
 
+            # if self.is_unlocked():
+            # #   Whatever a bike should be able to do if a bike is unlocked can be done here. 
+            # #   Making the accelerator work, a green light showing bike is unlocked etc.
+            # #   It's depnding on hardware of a bike and customers needs.
+
+            # # TODO this can be changed (removed), but needs action from the server when battery
+            # # is so low that the bike should be locked.
+            # if self._bike.battery.low_battery():  # Low is <= 0.03
+            #     self._bike.set_status(1)
+            #     # self._bike.lock_bike()
+
             if self._battery.needs_charging():
-                self.set_status(4)  # 4 is the status for maintenance required
+                # 4 is the status for maintenance required, changes to 5 in method if bike is unlocked
+                self.set_status(4)
 
             self._update_speed_limit()
 
@@ -216,7 +231,9 @@ class Bike:
             try:
                 async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
                     if response.status >= 300:
-                        print(f"Errorcode: {response.status}")
+                        response_data = await response.json()
+                        print(f"Updating data, errorcode: {response.status}")
+                        print(response_data)
             except asyncio.TimeoutError:
                 pass
 
