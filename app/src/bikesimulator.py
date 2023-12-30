@@ -19,6 +19,7 @@ class BikeSimulator:
         interval (int): interval in seconds for the bike to send data to server when moving.
     """
     API_URL = os.environ.get('API_URL', '')
+    API_KEY = os.environ.get('API_KEY', '')
 
     def __init__(self, bike: 'Bike', simulation: dict, interval: int):
         self._bike = bike
@@ -122,7 +123,7 @@ class BikeSimulator:
         """
         headers = {
             'x-access-token': user.get('token', ''),
-            'x-api-key': self._bike.api_key
+            'x-api-key': self.API_KEY
         }
         data = {'userId': user.get('id', '')}
 

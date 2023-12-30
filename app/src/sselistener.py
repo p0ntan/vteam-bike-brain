@@ -2,6 +2,7 @@
 """
 SSE listener class
 """
+import os
 import asyncio
 import json
 from aiosseclient import aiosseclient
@@ -16,6 +17,7 @@ class SSEListener:
         bike_instance (Bike): the bike to "wrap" the listener around
         api_url (str): url to where the events is sent from server
     """
+    API_KEY = os.environ.get('API_KEY', '')
 
     def __init__(self, bike_instance: Bike, api_url: str):
         self._bike = bike_instance
@@ -26,7 +28,7 @@ class SSEListener:
         """ Start listening to events sent from server. """
         self._running = True
 
-        headers = {'bike_id': str(self._bike.id), 'x-api-key': self._bike.api_key}
+        headers = {'bike_id': str(self._bike.id), 'x-api-key': self.API_KEY}
         while self._running:
             try:
                 async for event in aiosseclient(self._api_url, headers=headers):

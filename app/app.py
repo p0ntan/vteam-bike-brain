@@ -25,6 +25,9 @@ async def main():
     # API-URL
     base_url = os.environ.get('API_URL', '')
 
+    # API-key
+    api_key = os.environ.get('API_KEY', '')
+
     # Load routes with RouteHandler
     base_dir = os.path.dirname(__file__)
     routes_dir = os.path.join(base_dir, 'routes')
@@ -32,7 +35,7 @@ async def main():
     routes = r_handler.routes
 
     # Get bike_data from server
-    headers = {'x-api-key': '080d17d62d28f82a97922ce6640a4a03'}
+    headers = {'x-api-key': api_key}
     response = requests.get(f"{base_url}/bikes", headers=headers, timeout=1.5)
     bike_data = response.json()
 
