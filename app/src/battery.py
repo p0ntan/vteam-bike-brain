@@ -25,6 +25,13 @@ class BatteryBase(ABC):
             boolean: if battery is low and needs charging
         """
 
+    @abstractmethod
+    def low_battery(self):
+        """
+        Returns:
+            boolean: if battery is too low for keep renting
+        """
+
 
 class BatterySimulator(BatteryBase):
     """ The battery-class used in the simulation.
@@ -43,7 +50,8 @@ class BatterySimulator(BatteryBase):
         old_level = self._level
 
         # Make sure the battery stops at 0
-        self._level -= self._level_reduction if self._level > 0 else 0
+        self._level -= self._level_reduction
+        self._level = 0 if self._level < 0 else self._level
 
         return old_level
 
@@ -54,3 +62,11 @@ class BatterySimulator(BatteryBase):
             boolean: if battery is low and needs charging
         """
         return self._level <= 0.15
+
+    def low_battery(self):
+        """ Tells if battery needs is too low for keep renting.
+
+        Returns:
+            boolean: if battery is too
+        """
+        return self._level <= 0.03

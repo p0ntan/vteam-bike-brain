@@ -60,3 +60,8 @@ class GpsSimulator(GpsBase):
     def speed(self):
         """ int: speed for the bike in km/h """
         return round(self._speed)
+
+    @speed.setter
+    def speed(self, speed):
+        """ Only intented to be used when forcing a bike to stop i simulation. """
+        self._speed = speed

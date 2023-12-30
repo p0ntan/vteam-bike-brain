@@ -11,6 +11,8 @@ from src.bikefactory import BikeFactory
 from src.routehandler import RouteHandler
 from src.sselistener import SSEListener
 
+# TODO fixa med kommentarer, dela upp i två olika filer för sim och enskild cykel.
+
 
 async def main():
     """ Main program to start up all bikes for simulation.
@@ -23,6 +25,9 @@ async def main():
     # API-URL
     base_url = os.environ.get('API_URL', '')
 
+    # API-key
+    api_key = os.environ.get('API_KEY', '')
+
     # Load routes with RouteHandler
     base_dir = os.path.dirname(__file__)
     routes_dir = os.path.join(base_dir, 'routes')
@@ -30,19 +35,12 @@ async def main():
     routes = r_handler.routes
 
     # Get bike_data from server
-    headers = {'x-api-key': '080d17d62d28f82a97922ce6640a4a03'}
+    headers = {'x-api-key': api_key}
     response = requests.get(f"{base_url}/bikes", headers=headers, timeout=1.5)
     bike_data = response.json()
 
-    # Get zones for bikes in simulation.
-    city_zones = {}
-    for bike_id in [1, 600, 800]:
-        response = requests.get(f"{base_url}/bikes/{bike_id}/zones", headers=headers, timeout=1.5)
-        data = response.json()
-        city_zones[data.get('city_id')] = data
-
     # Initialize bikes with BikeFactory
-    bike_factory = BikeFactory(bike_data, routes, city_zones, interval=interval_in_seconds)
+    bike_factory = BikeFactory(bike_data, routes, interval=interval_in_seconds)
 
     # Start bikes and listeners as separate tasks.
     tasks = []

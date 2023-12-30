@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+# pylint: disable=protected-access
 """ Module for testing the class RouteHandler """
 
 import os
@@ -16,7 +17,6 @@ def test_init_routehandler():
     test_directory = os.path.join(base_dir, 'test-data')
     rhandler = RouteHandler(test_directory)
 
-    # pylint: disable=protected-access
     assert rhandler._interval == 10
     assert isinstance(rhandler.routes, dict)
 
