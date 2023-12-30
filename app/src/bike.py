@@ -135,7 +135,7 @@ class Bike:
         """ Unlock the bike by changing status to 2. """
         # TODO byt ut sätt att låsa upp cykel eller ta bort metoden
         # self.set_status(2)
-        pass  # Pass for now, since used when activating a bike.
+        # Nothing for now, since used when activating a bike.
 
     def _update_speed_limit(self):
         """ Updates the speedlimit for the bike. """

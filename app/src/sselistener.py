@@ -50,6 +50,7 @@ class SSEListener:
         Args:
             data (dict): data to decide what to do with bike.
         """
+        action = None
         args = data.get('args', [])
 
         if 'instruction_all' in data:
