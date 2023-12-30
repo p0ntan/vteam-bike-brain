@@ -58,10 +58,10 @@ class SSEListener:
         elif 'bike_id' in data and int(data.get('bike_id')) == self._bike.id:
             instruction = data.get('instruction')
             action = getattr(self._bike, instruction)
-        
+
         if action and inspect.iscoroutinefunction(action):
             asyncio.create_task(action(*args))
-        elif action: 
+        elif action:
             action(*args)
 
     def stop_listener(self):

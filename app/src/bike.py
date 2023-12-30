@@ -87,11 +87,10 @@ class Bike:
         req_url = self.API_URL + route
         headers = {'x-api-key': self.API_KEY}
 
-        response = requests.get(req_url, headers=headers, timeout=5) 
+        response = requests.get(req_url, headers=headers, timeout=5)
         if response.status_code < 300:
             city_zone_data = response.json()
             self._add_zones(city_zone_data)
-            self._city_id = city_zone_data.get('city_id')
         else:
             print(f"Errorcode: {response.status_code}")
 
