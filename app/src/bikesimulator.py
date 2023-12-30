@@ -21,7 +21,7 @@ class BikeSimulator:
     API_URL = os.environ.get('API_URL', '')
     API_KEY = os.environ.get('API_KEY', '')
 
-    def __init__(self, bike: 'Bike', simulation: dict, interval: int):
+    def __init__(self, bike: 'Bike', simulation: dict, interval: int):  # noqa: F821
         self._bike = bike
         self._simulation = simulation
         self._interval = interval
