@@ -5,7 +5,7 @@
 """ Module for testing the class Bike """
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from src.bike import Bike
 from src.battery import BatterySimulator
@@ -14,7 +14,6 @@ from src.zone import CityZone, Zone
 
 bike_data = {
     'id': 1,
-    'city_id': 'STHLM',
     'status_id': 1,
     'coords': [13.508699207322167, 59.38210003526896],
 }
@@ -66,6 +65,10 @@ def test_create_bike():
     # status_id
     assert 'status_id' in data_from_bike
     assert isinstance(data_from_bike.get('status_id'), int)
+    # city_id, should be empty string when no zone has been added/updated
+    assert 'city_id' in data_from_bike
+    assert isinstance(data_from_bike.get('city_id'), str)
+    assert data_from_bike.get('city_id') == ''
     # charge_perc
     assert 'charge_perc' in data_from_bike
     assert isinstance(data_from_bike.get('charge_perc'), float)
@@ -233,7 +236,11 @@ def test_load_zone_data():
     gps_sim = MagicMock()
     battery_sim = MagicMock()
     bike = Bike(bike_data, battery_sim, gps_sim)
-    bike.add_zones(zone_data)  # Data at the top of file
+
+    with patch('src.bike.requests.get') as mock_get:
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.json.return_value = zone_data  # Data at the top of file
+        bike.update_zones()
 
     city_zone = bike._city_zone
     forbidden_zone = city_zone._zones[0]
@@ -245,3 +252,4 @@ def test_load_zone_data():
     assert forbidden_zone.speed_limit == 0
     assert isinstance(zone_without_limit, Zone)
     assert zone_without_limit.speed_limit == 20
+    assert city_zone.city_id == "TEST"

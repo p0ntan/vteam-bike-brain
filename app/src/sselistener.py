@@ -5,6 +5,7 @@ SSE listener class
 import os
 import asyncio
 import json
+import inspect
 from aiosseclient import aiosseclient
 from src.bike import Bike
 
@@ -41,7 +42,7 @@ class SSEListener:
             # pylint: disable=broad-exception-caught
             except Exception as error:
                 print(f"Error in SSE connection: {error}")
-                await asyncio.sleep(5)  # Wait 5 seconds before trying to reconnect
+                await asyncio.sleep(2)  # Wait 2 seconds before trying to reconnect
 
     async def _control_bike(self, data: dict):
         """ Control the bike with actions setn from server.
@@ -54,11 +55,13 @@ class SSEListener:
         if 'instruction_all' in data:
             instruction = data.get('instruction_all')
             action = getattr(self._bike, instruction)
-            asyncio.create_task(action(*args))
-
         elif 'bike_id' in data and int(data.get('bike_id')) == self._bike.id:
             instruction = data.get('instruction')
             action = getattr(self._bike, instruction)
+        
+        if action and inspect.iscoroutinefunction(action):
+            asyncio.create_task(action(*args))
+        elif action: 
             action(*args)
 
     def stop_listener(self):

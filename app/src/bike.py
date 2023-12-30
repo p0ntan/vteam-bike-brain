@@ -5,6 +5,7 @@ Bike module
 import os
 import asyncio
 import aiohttp
+import requests
 from src.bikesimulator import BikeSimulator
 from src.battery import BatteryBase
 from src.gps import GpsBase
@@ -28,7 +29,6 @@ class Bike:
 
     def __init__(self, data: dict, battery: BatteryBase, gps: GpsBase, simulation: dict = None, interval: int = 10):
         self._status = data.get('status_id')
-        self._city_id = data.get('city_id')
         self._id = data.get('id')
         self._gps = gps
         self._battery = battery
@@ -65,7 +65,7 @@ class Bike:
         """ BatteryBase: Returns the Battery-instance for the bike. """
         return self._battery
 
-    def add_zones(self, city_zone_data: dict):
+    def _add_zones(self, city_zone_data: dict):
         """ Method to add zones to bike.
 
         Args:
@@ -81,23 +81,19 @@ class Bike:
         city_zone.add_zones_list(zones)
         self._city_zone = city_zone
 
-    async def update_zones(self):
+    def update_zones(self):
         """ Method to update zones from server. """
         route = f"/bikes/{self.id}/zones"
         req_url = self.API_URL + route
         headers = {'x-api-key': self.API_KEY}
 
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(req_url, headers=headers, timeout=5) as response:
-                    if response.status < 300:
-                        city_zone_data = await response.json()
-                        self.add_zones(city_zone_data)
-                        self._city_id = city_zone_data.get('city_id')
-                    else:
-                        print(f"Errorcode: {response.status}")
-            except asyncio.TimeoutError:
-                pass
+        response = requests.get(req_url, headers=headers, timeout=5) 
+        if response.status_code < 300:
+            city_zone_data = response.json()
+            self._add_zones(city_zone_data)
+            self._city_id = city_zone_data.get('city_id')
+        else:
+            print(f"Errorcode: {response.status_code}")
 
     def set_status(self, status: int):
         """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
@@ -157,7 +153,7 @@ class Bike:
         """
         return {
             'id': self.id,
-            'city_id': self._city_id,
+            'city_id': '' if self._city_zone is None else self._city_zone.city_id,
             'status_id': self._status,
             'charge_perc': round(self._battery.level, 2),
             'coords': self._gps.position,
