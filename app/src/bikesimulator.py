@@ -70,11 +70,7 @@ class BikeSimulator:
         for position in trip.get('coords', []):
             self._bike.gps.position = (position, self._interval)
 
-            # TODO this can be changed (removed), but needs to be locked from the server when battery is low
-            if self._bike.battery.low_battery():  # Low is <= 0.03
-                self._bike.set_status(1)
-                # self._bike.lock_bike()
-            elif self._bike.battery.needs_charging():  # <= 0.15
+            if self._bike.battery.needs_charging():
                 self._bike.set_status(5)  # 5 is the status for 'rented maintenance required'
 
             await self._bike.update_bike_data()
@@ -87,7 +83,7 @@ class BikeSimulator:
                 await self._bike.update_bike_data()
                 return
 
-        # After each simulatioed trip, set speed to zero.
+        # After each simulatioed trip make sure speed is zero.
         self._bike.gps.speed = 0
 
         # Ending a trip should only be done when a trip has come to the last coords

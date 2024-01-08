@@ -176,12 +176,6 @@ class Bike:
             # #   Making the accelerator work, a green light showing bike is unlocked etc.
             # #   It's depnding on hardware of a bike and customers needs.
 
-            # # TODO this can be changed (removed), but needs action from the server when battery
-            # # is so low that the bike should be locked.
-            # if self._bike.battery.low_battery():  # Low is <= 0.03
-            #     self._bike.set_status(1)
-            #     # self._bike.lock_bike()
-
             if self._battery.needs_charging():
                 # 4 is the status for maintenance required, changes to 5 in method if bike is unlocked
                 self.set_status(4)
