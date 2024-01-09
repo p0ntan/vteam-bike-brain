@@ -16,11 +16,12 @@ class BikeSimulator:
     Args:
         bike (Bike): the Bike to simulate.
         simulation (dict): simulation data needed for simulation.
-        interval (int): interval in seconds for the bike to send data to server when moving, default is 10.
+        interval (int): interval in seconds for the bike to send data to server when moving.
     """
     API_URL = os.environ.get('API_URL', '')
+    API_KEY = os.environ.get('API_KEY', '')
 
-    def __init__(self, bike, simulation: dict, interval: int):
+    def __init__(self, bike: 'Bike', simulation: dict, interval: int):  # noqa: F821
         self._bike = bike
         self._simulation = simulation
         self._interval = interval
@@ -31,6 +32,7 @@ class BikeSimulator:
         for trip in self._simulation.get('trips', []):
             response_ok, trip_id = await self._start_renting(trip)
             if response_ok:
+                self._bike.set_status(2)  # This also is done through SSE, but isn't fast enough for simulation
                 await self._simulate_trip(trip, trip_id)
 
     async def _start_renting(self, trip: dict):
@@ -67,11 +69,24 @@ class BikeSimulator:
         """
         for position in trip.get('coords', []):
             self._bike.gps.position = (position, self._interval)
+
             if self._bike.battery.needs_charging():
-                self._bike.set_status(4)  # 4 is the status for maintenance required
+                self._bike.set_status(5)  # 5 is the status for 'rented maintenance required'
+
             await self._bike.update_bike_data()
             await asyncio.sleep(self._interval)
 
+            # If a bike is locked by any reason, stop simulation and set speed to 0.
+            # And make a last update to server with the newest data.
+            if not self._bike.is_unlocked():
+                self._bike.gps.speed = 0
+                await self._bike.update_bike_data()
+                return
+
+        # After each simulatioed trip make sure speed is zero.
+        self._bike.gps.speed = 0
+
+        # Ending a trip should only be done when a trip has come to the last coords
         await self._end_renting(trip, trip_id)
 
     async def _end_renting(self, trip: dict, trip_id: int):
@@ -104,7 +119,7 @@ class BikeSimulator:
         """
         headers = {
             'x-access-token': user.get('token', ''),
-            'x-api-key': self._bike.api_key
+            'x-api-key': self.API_KEY
         }
         data = {'userId': user.get('id', '')}
 

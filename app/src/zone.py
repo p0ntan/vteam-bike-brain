@@ -52,6 +52,12 @@ class CityZone(Zone):
         """ Constructor """
         super().__init__(data, speed_limit)
         self._zones = []
+        self._city_id = data.get('city_id', '')
+
+    @property
+    def city_id(self):
+        """ str: id of city. """
+        return self._city_id
 
     def add_zone(self, zone: Zone):
         """ Add a zone to city.

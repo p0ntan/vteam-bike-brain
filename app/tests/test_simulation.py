@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+# pylint: disable=protected-access
+
 """
 Module for testing the simulation.
 
@@ -8,8 +10,8 @@ multiple classes to work.
 """
 
 import os
-import pytest
 from unittest.mock import patch
+import pytest
 from src.bike import Bike
 from src.bikesimulator import BikeSimulator
 from src.battery import BatterySimulator
