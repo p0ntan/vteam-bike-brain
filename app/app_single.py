@@ -11,8 +11,6 @@ from src.bikefactory import BikeFactory
 from src.routehandler import RouteHandler
 from src.sselistener import SSEListener
 
-# TODO fixa med kommentarer, dela upp i två olika filer för sim och enskild cykel.
-
 
 async def main():
     """ Main program to start up all bikes for simulation.
@@ -42,12 +40,13 @@ async def main():
     # Initialize bikes with BikeFactory
     bike_factory = BikeFactory(bike_data, routes, interval=interval_in_seconds)
 
-    # Start listeners to use for simulation.
+    # Start bikes and listeners as separate tasks.
     tasks = []
     for bike in bike_factory.bikes.values():
         sse_url = f"{base_url}/bikes/instructions"
         listener = SSEListener(bike, sse_url)
         tasks.append(listener.listen())
+        tasks.append(bike.start())
 
     print("Running")
 

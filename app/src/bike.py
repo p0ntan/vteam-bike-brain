@@ -128,14 +128,11 @@ class Bike:
 
     def lock_bike(self):
         """ Lock the bike by changing status to 1. """
-        # TODO ta bort eller byt sätt att låsa cykel
         self.set_status(1)
 
     def unlock_bike(self):
-        """ Unlock the bike by changing status to 2. """
-        # TODO byt ut sätt att låsa upp cykel eller ta bort metoden
-        # self.set_status(2)
-        # Nothing for now, since used when activating a bike.
+        """ Unlock. """
+        # Nothing for now, but here for future implementation.
 
     def _update_speed_limit(self):
         """ Updates the speedlimit for the bike. """
@@ -163,7 +160,7 @@ class Bike:
         """ The asynchronous loop in the bike when program is running. """
         # loop_interval is number of seconds between each loop. Should be a low number for frequent
         # controls of position.
-        loop_interval = self._interval  # TODO Change this to wanted loop time in bike
+        loop_interval = 2
 
         # count controls each loop iteration. Will be set to same as interval for first loop
         count = self._interval
