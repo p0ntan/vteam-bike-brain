@@ -1,0 +1,14 @@
+FROM python:3.10.12-slim
+
+WORKDIR /bike/app
+
+COPY ./app/requirements-prod.txt ./
+RUN pip install --no-cache-dir -r requirements-prod.txt
+
+COPY ./app/routes ./routes
+COPY ./app/src ./src
+COPY ./app/routes ./routes
+COPY ./app/app.py ./
+COPY ./app/app_single.py ./
+
+CMD ["python", "app.py"]
