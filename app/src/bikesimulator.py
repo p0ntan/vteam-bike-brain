@@ -28,6 +28,11 @@ class BikeSimulator:
 
     async def start_simulation(self):
         """ Asynchronous method to start the simulation for a bike. """
+        if self._simulation is None or len(self._simulation.get('trips', [])) == 0:
+            if self._bike.battery.needs_charging():
+                self._bike.set_status(4)
+            await self._bike.update_bike_data()
+            return
 
         for trip in self._simulation.get('trips', []):
             response_ok, trip_id = await self._start_renting(trip)

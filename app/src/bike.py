@@ -189,7 +189,7 @@ class Bike:
 
     async def run_simulation(self):
         """ Asynchronous method to run the simulation for a bike. """
-        if self._simulation is None or not self._simulation_event_off.is_set():
+        if not self._simulation_event_off.is_set():
             return
 
         self._simulation_event_off.clear()

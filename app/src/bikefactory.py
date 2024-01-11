@@ -6,7 +6,6 @@ Bikefactory module, used for creating each bike with injections
 import os
 import json
 import random
-import asyncio
 from src.bike import Bike
 from src.battery import BatterySimulator
 from src.gps import GpsSimulator
@@ -45,7 +44,7 @@ class BikeFactory:
 
     def _load_good_routes(self):
         """ This loads the good routes bike id for simulation.
-        
+
         Returns:
             set: with id of bikes with good routes
         """
@@ -59,22 +58,22 @@ class BikeFactory:
 
         return good_routes
 
-    def _decide_battery_level(self, id, good_routes):
+    def _decide_battery_level(self, bike_id: int, good_routes: set):
         """ Sets random batterylevels depending on id of bike.
-        
+
         Args:
-            id (int): id for the bike
+            bike_id (int): id for the bike
             good_routes (set): set with bike ids
-        
+
         Returns:
             float: battery level to use
         """
-        battery_level = round(random.uniform(0.15, 0.7),2)
+        battery_level = round(random.uniform(0.15, 0.7), 2)
 
-        if id in good_routes:
-            battery_level = round(random.uniform(0.7, 1),2)
-        elif id > 1057:
-            battery_level = round(random.uniform(0.1, 0.5),2)
+        if bike_id in good_routes:
+            battery_level = round(random.uniform(0.7, 1), 2)
+        elif bike_id > 1057:
+            battery_level = round(random.uniform(0.1, 0.5), 2)
 
         return battery_level
 
