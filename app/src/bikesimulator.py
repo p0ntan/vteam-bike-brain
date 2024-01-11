@@ -57,7 +57,7 @@ class BikeSimulator:
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
+                async with session.post(req_url, json=data, headers=headers, timeout=10) as response:
                     if response.status < 300:
                         response_data = await response.json()
                         return 'errors' not in response_data, response_data.get('trip_id')
@@ -107,7 +107,7 @@ class BikeSimulator:
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(req_url, json=user_data, headers=headers, timeout=5) as response:
+                async with session.put(req_url, json=user_data, headers=headers, timeout=10) as response:
                     if response.status >= 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:

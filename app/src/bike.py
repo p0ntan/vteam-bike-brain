@@ -87,12 +87,16 @@ class Bike:
         req_url = self.API_URL + route
         headers = {'x-api-key': self.API_KEY}
 
-        response = requests.get(req_url, headers=headers, timeout=5)
-        if response.status_code < 300:
-            city_zone_data = response.json()
-            self._add_zones(city_zone_data)
-        else:
-            print(f"Errorcode: {response.status_code}")
+        try:
+            response = requests.get(req_url, headers=headers, timeout=10)
+            if response.status_code < 300:
+                city_zone_data = response.json()
+                self._add_zones(city_zone_data)
+            else:
+                print(f"Errorcode: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            # Do nothing, just catch execept error
+            print("Error", e)
 
     def set_status(self, status: int):
         """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
@@ -208,7 +212,7 @@ class Bike:
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(req_url, json=data, headers=headers, timeout=5) as response:
+                async with session.put(req_url, json=data, headers=headers, timeout=10) as response:
                     if response.status >= 300:
                         response_data = await response.json()
                         print(f"Updating data, errorcode: {response.status}")
