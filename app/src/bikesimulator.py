@@ -93,6 +93,7 @@ class BikeSimulator:
 
         # Ending a trip should only be done when a trip has come to the last coords
         await self._end_renting(trip, trip_id)
+        await self._simulate_break()
 
     async def _end_renting(self, trip: dict, trip_id: int):
         """ End renting the bike after a trip.
@@ -129,3 +130,10 @@ class BikeSimulator:
         data = {'userId': user.get('id', '')}
 
         return headers, data
+
+    async def _simulate_break(self):
+        """ Simulates a break between two renting periods. """
+        break_time = 10
+        for _ in range(0, 2):
+            await self._bike.update_bike_data()
+            await asyncio.sleep(break_time)

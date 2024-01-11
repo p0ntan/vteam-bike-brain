@@ -19,10 +19,12 @@ def test_bikefactory():
     ]
 
     with patch('src.bike.Bike.update_zones') as mock_update_zones:
-        b_factory = BikeFactory(bike_data, routes={})
-        bikes = b_factory.bikes
+        with patch('src.bikefactory.BikeFactory._load_good_routes') as mock_good_routes:
+            b_factory = BikeFactory(bike_data, routes={})
+            bikes = b_factory.bikes
 
-        mock_update_zones.assert_called_once()
+            mock_update_zones.assert_called_once()
+            mock_good_routes.assert_called_once()
 
     assert isinstance(bikes, dict)
     assert isinstance(bikes.get(1), Bike)
