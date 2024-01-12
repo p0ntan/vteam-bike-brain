@@ -117,7 +117,7 @@ class Bike:
         elif status == 2:
             # Change to faster interval when bike is rented, status 2
             self._interval = self._fast_interval
-        elif status == 4:
+        elif status == 4 and self._status not in {3}:
             # If maintenance is required and bike is rented (unlocked), use status 5
             status = 5 if self.is_unlocked() else status
         self._status = status
