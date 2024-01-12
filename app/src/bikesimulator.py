@@ -6,6 +6,7 @@ Class for BikeSimulator
 from __future__ import annotations
 import os
 import asyncio
+import random
 import aiohttp
 
 
@@ -28,6 +29,11 @@ class BikeSimulator:
 
     async def start_simulation(self):
         """ Asynchronous method to start the simulation for a bike. """
+        if self._simulation is None or len(self._simulation.get('trips', [])) == 0:
+            if self._bike.battery.needs_charging():
+                self._bike.set_status(4)
+            await self._bike.update_bike_data()
+            return
 
         for trip in self._simulation.get('trips', []):
             response_ok, trip_id = await self._start_renting(trip)
@@ -52,7 +58,7 @@ class BikeSimulator:
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.post(req_url, json=data, headers=headers, timeout=5) as response:
+                async with session.post(req_url, json=data, headers=headers, timeout=10) as response:
                     if response.status < 300:
                         response_data = await response.json()
                         return 'errors' not in response_data, response_data.get('trip_id')
@@ -88,6 +94,7 @@ class BikeSimulator:
 
         # Ending a trip should only be done when a trip has come to the last coords
         await self._end_renting(trip, trip_id)
+        await self._simulate_break()
 
     async def _end_renting(self, trip: dict, trip_id: int):
         """ End renting the bike after a trip.
@@ -101,7 +108,7 @@ class BikeSimulator:
 
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.put(req_url, json=user_data, headers=headers, timeout=5) as response:
+                async with session.put(req_url, json=user_data, headers=headers, timeout=10) as response:
                     if response.status >= 300:
                         print(f"Errorcode: {response.status}")
             except asyncio.TimeoutError:
@@ -124,3 +131,11 @@ class BikeSimulator:
         data = {'userId': user.get('id', '')}
 
         return headers, data
+
+    async def _simulate_break(self):
+        """ Simulates a break between two renting periods. """
+        break_time = 10
+        lenght = random.randint(2, 3)
+        for _ in range(0, lenght):
+            await self._bike.update_bike_data()
+            await asyncio.sleep(break_time)
