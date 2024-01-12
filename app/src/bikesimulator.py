@@ -6,6 +6,7 @@ Class for BikeSimulator
 from __future__ import annotations
 import os
 import asyncio
+import random
 import aiohttp
 
 
@@ -134,6 +135,7 @@ class BikeSimulator:
     async def _simulate_break(self):
         """ Simulates a break between two renting periods. """
         break_time = 10
-        for _ in range(0, 2):
+        lenght = random.randint(2, 3)
+        for _ in range(0, lenght):
             await self._bike.update_bike_data()
             await asyncio.sleep(break_time)

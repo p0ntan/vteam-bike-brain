@@ -94,9 +94,9 @@ class Bike:
                 self._add_zones(city_zone_data)
             else:
                 print(f"Errorcode: {response.status_code}")
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException as error:
             # Do nothing, just catch execept error
-            print("Error", e)
+            print("Error", error)
 
     def set_status(self, status: int):
         """ Set the status of the bike, set_status is used instead of a setter to access method from SSE-listener.
