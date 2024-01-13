@@ -114,12 +114,15 @@ async def test_simulation_error_response(bike_setup, mock_methods):
 
         return response
 
-    with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
-        await bike.run_simulation()
+    with patch('aiohttp.ClientSession.put') as mock_put:
+        mock_put.return_value = MockedResponse(json_data={'msg': 'ok'}, status=200)
 
-    mock_end_renting.assert_not_called()
+        with patch('aiohttp.ClientSession.post', side_effect=post_side_effect):
+            await bike.run_simulation()
 
-    assert bike._interval == bike.SLOW_INTERVAL
+        mock_end_renting.assert_not_called()
+
+        assert bike._interval == bike.SLOW_INTERVAL
 
 
 @pytest.mark.asyncio

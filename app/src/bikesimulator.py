@@ -34,7 +34,7 @@ class BikeSimulator:
             if response_ok:
                 self._bike.set_status(2)  # This also is done through SSE, but isn't fast enough for simulation
                 await self._simulate_trip(trip, trip_id)
-    
+
         if self._bike.battery.needs_charging():
             self._bike.set_status(4)
 
