@@ -9,6 +9,5 @@ COPY ./app/routes ./routes
 COPY ./app/src ./src
 COPY ./app/to_simulation ./to_simulation
 COPY ./app/app.py ./
-COPY ./app/app_single.py ./
 
 CMD ["python", "app.py"]

@@ -38,11 +38,6 @@ class BikeSimulator:
         except AttributeError:
             pass
 
-        if self._bike.battery.needs_charging():
-            self._bike.set_status(4)
-
-        await self._bike.update_bike_data()
-
     async def _start_renting(self, trip: dict):
         """ Start renting the bike for a trip.
 

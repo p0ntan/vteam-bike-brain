@@ -110,10 +110,9 @@ async def test_start_low_battery_locked():
     battery_sim = MagicMock()
     battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True])
 
-    bike = Bike(bike_data, battery_sim, gps_sim)
+    bike = Bike(bike_data, battery_sim, gps_sim, interval=2)
 
     # Mock methods to isolate test
-    bike._interval = 2
     bike.update_bike_data = AsyncMock()
     bike._running = True
 
@@ -143,10 +142,9 @@ async def test_start_low_battery_unlocked():
     battery_sim = MagicMock()
     battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True])
 
-    bike = Bike(bike_data, battery_sim, gps_sim)
+    bike = Bike(bike_data, battery_sim, gps_sim, interval=2)
 
     # Mock methods to isolate test
-    bike._interval = 2
     bike.update_bike_data = AsyncMock()
     bike._running = True
 
