@@ -46,6 +46,7 @@ async def main():
         sse_url = f"{base_url}/bikes/instructions"
         listener = SSEListener(bike, sse_url)
         tasks.append(listener.listen())
+        tasks.append(bike.start())
 
     print("Running")
 

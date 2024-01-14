@@ -164,7 +164,7 @@ class Bike:
         """ The asynchronous loop in the bike when program is running. """
         # loop_interval is number of seconds between each loop. Should be a low number for frequent
         # controls of position.
-        loop_interval = 2
+        loop_interval = self._fast_interval # TODO set this to 2
 
         # count controls each loop iteration. Will be set to same as interval for first loop
         count = self._interval
