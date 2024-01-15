@@ -160,12 +160,11 @@ class Bike:
             'speed': self._gps.speed
         }
 
-    async def _run_bike(self):
-        """ The asynchronous loop in the bike when program is running. """
-        # loop_interval is number of seconds between each loop. Should be a low number for frequent
-        # controls of position.
-        loop_interval = self._fast_interval # TODO set this to 2
-
+    async def _run_bike(self, loop_interval: int = 1):
+        """ The asynchronous loop in the bike when program is running.
+        Args:
+            loop_interval (int = 1): interval betwteen internal iterations
+        """
         # count controls each loop iteration. Will be set to same as interval for first loop
         count = self._interval
         while self._running:
@@ -220,14 +219,16 @@ class Bike:
             except asyncio.TimeoutError:
                 pass
 
-    def start(self):
+    def start(self, loop_interval: int = 1):
         """ Start the bikes program
+        Args:
+            loop_interval (int): used for internal loop when running bike
 
         Returns:
             self._run_bike(): Task to run by the SSE-listener
         """
         self._running = True
-        return self._run_bike()
+        return self._run_bike(loop_interval)
 
     def stop(self):
         """ Stop the bikes program """
