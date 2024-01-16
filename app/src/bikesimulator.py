@@ -58,7 +58,7 @@ class BikeSimulator:
                 async with session.post(req_url, json=data, headers=headers, timeout=10) as response:
                     if response.status < 300:
                         response_data = await response.json()
-                        return 'errors' not in response_data, response_data.get('trip_id')
+                        return 'errors' not in response_data, response_data.get('id')
                     return False, None
             except asyncio.TimeoutError:
                 return False, None
