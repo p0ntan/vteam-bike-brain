@@ -43,10 +43,11 @@ async def main():
     # Start listeners to use for simulation.
     tasks = []
     for bike in bike_factory.bikes.values():
+        internal_loop_interval = 30  # Used when simulating bikes not moving on map
         sse_url = f"{base_url}/bikes/instructions"
         listener = SSEListener(bike, sse_url)
         tasks.append(listener.listen())
-        tasks.append(bike.start())
+        tasks.append(bike.start(internal_loop_interval))
 
     print("Running")
 

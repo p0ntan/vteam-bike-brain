@@ -108,9 +108,9 @@ async def test_start_low_battery_locked():
     """ Test to see if status changes if battery gets to low, bike standing still. """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
-    battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True])
+    battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True, True, True])
 
-    bike = Bike(bike_data, battery_sim, gps_sim, interval=2)
+    bike = Bike(bike_data, battery_sim, gps_sim)
 
     # Mock methods to isolate test
     bike.update_bike_data = AsyncMock()
@@ -131,7 +131,7 @@ async def test_start_low_battery_locked():
     )
 
     # Control that needs_charging has run three times and status has changed
-    assert bike._battery.needs_charging.call_count == 3
+    assert bike._battery.needs_charging.call_count == 5
     assert bike.status == 4
 
 
@@ -140,9 +140,9 @@ async def test_start_low_battery_unlocked():
     """ Test to see if status changes if battery gets to low, while rented. """
     gps_sim = MagicMock()
     battery_sim = MagicMock()
-    battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True])
+    battery_sim.needs_charging = MagicMock(side_effect=[False, False, True, True, True, True])
 
-    bike = Bike(bike_data, battery_sim, gps_sim, interval=2)
+    bike = Bike(bike_data, battery_sim, gps_sim)
 
     # Mock methods to isolate test
     bike.update_bike_data = AsyncMock()
@@ -164,7 +164,7 @@ async def test_start_low_battery_unlocked():
     )
 
     # Control that needs_charging has run three times and status has changed
-    assert bike._battery.needs_charging.call_count == 3
+    assert bike._battery.needs_charging.call_count == 5
     assert bike.status == 5
 
 

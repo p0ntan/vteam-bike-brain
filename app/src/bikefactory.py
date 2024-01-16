@@ -34,10 +34,11 @@ class BikeFactory:
 
         for data_item in bike_data:
             bike_id = data_item.get('id')
+            status_id = data_item.get('status_id')
             simulation = routes[bike_id] if bike_id in routes else None
-            battery_level = self._decide_battery_level(bike_id, good_routes)
+            battery_level, level_reduction = self._decide_battery_level(bike_id, good_routes, status_id)
             gps_sim = GpsSimulator(data_item.get('coords'))
-            battery_sim = BatterySimulator(battery_level)
+            battery_sim = BatterySimulator(battery_level, level_reduction)
             new_bike = Bike(data_item, battery_sim, gps_sim, simulation, interval)
             new_bike.update_zones()
             self._bikes[bike_id] = new_bike
@@ -58,24 +59,29 @@ class BikeFactory:
 
         return good_routes
 
-    def _decide_battery_level(self, bike_id: int, good_routes: set):
+    def _decide_battery_level(self, bike_id: int, good_routes: set, status_id: int):
         """ Sets random batterylevels depending on id of bike.
 
         Args:
             bike_id (int): id for the bike
             good_routes (set): set with bike ids
+            status_id (int): status for the bike
 
         Returns:
-            float: battery level to use
+            tuple:
+                - float: battery level to use
+                - float: level reduction
         """
+        level_reduction = 0.001
         battery_level = round(random.uniform(0.15, 0.7), 2)
 
         if bike_id in good_routes:
             battery_level = round(random.uniform(0.7, 1), 2)
-        elif bike_id > 1057:
+        elif bike_id > 1057 and status_id == 3:
             battery_level = round(random.uniform(0.1, 0.5), 2)
+            level_reduction = -0.01  # Simulate charging battery
 
-        return battery_level
+        return battery_level, level_reduction
 
     @property
     def bikes(self):

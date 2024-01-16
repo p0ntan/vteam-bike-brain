@@ -9,7 +9,7 @@
 First of all, welcome! And you might be wondering, what is a bike-brain? Well, this repo is part of a system where you can rent electric scooters a.k.a. bikes. Here you can find the code intended to be run inside each bike, and also for simulating multiple bikes inside the system. You can see the full system [here](https://github.com/p0ntan/vteam-root), where you also can find the other subsystems of our project. This comprehensive system encompasses various components, such as the bike brain, server and API, an administrative frontend GUI, a user-oriented frontend GUI, and a progressive web app for users.
 
 ## Setup
-To use this repo, you'll need an .env file with the variables you find in the .env.example. But as you read above, this is a part of a bigger system and needs other components to work as intened.
+To use this repo, you'll need an .env file with the variables you find in the .env.example. But as you read above, this is a part of a bigger system and needs other components to work as intended.
 
 But if you want to try the repo locally inside a docker-container, just run the command and it will throw you right in after setting everything up. 
 

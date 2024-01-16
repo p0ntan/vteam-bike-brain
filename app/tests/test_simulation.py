@@ -71,7 +71,7 @@ async def test_simulation_five(bike_setup, mock_methods):
     bike = bike_setup
 
     def post_side_effect(*args, **kwargs):
-        response = MockedResponse(json_data={'trip_id': 123}, status=200)
+        response = MockedResponse(json_data={'id': 123}, status=200)
         bike.set_status(2)
         return response
 
@@ -104,7 +104,7 @@ async def test_simulation_error_response(bike_setup, mock_methods):
     bike = bike_setup
 
     def response_generator():
-        yield MockedResponse(json_data={'trip_id': 123}, status=400)
+        yield MockedResponse(json_data={'id': 123}, status=400)
         yield MockedResponse(json_data={'errors': 'Can\'t rent bike'}, status=204)
 
     response_iter = response_generator()
@@ -132,7 +132,7 @@ async def test_sim_one_ok_one_error(bike_setup, mock_methods):
     bike = bike_setup
 
     def response_generator():
-        yield MockedResponse(json_data={'trip_id': 123}, status=200)
+        yield MockedResponse(json_data={'id': 123}, status=200)
         yield MockedResponse(json_data={'error': 'Något gick fel'}, status=400)
 
     response_iter = response_generator()
