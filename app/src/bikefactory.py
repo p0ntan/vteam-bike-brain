@@ -75,7 +75,7 @@ class BikeFactory:
         level_reduction = 0.001
         battery_level = round(random.uniform(0.15, 0.7), 2)
 
-        if bike_id in good_routes:
+        if bike_id in good_routes or bike_id <= 206:
             battery_level = round(random.uniform(0.7, 1), 2)
         elif bike_id > 1057 and status_id == 3:
             battery_level = round(random.uniform(0.1, 0.5), 2)

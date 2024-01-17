@@ -49,9 +49,8 @@ class BatterySimulator(BatteryBase):
         """ float: the lever of the battery. Will be lowered in simulation automaticly. """
         old_level = self._level
 
-        # Make sure the battery stops at 0
-        self._level -= self._level_reduction
-        self._level = 0 if self._level < 0 else self._level
+        # Make sure the battery stops at 0 or 1
+        self._level = max(0, min(self._level - self._level_reduction, 1))
 
         return old_level
 

@@ -32,4 +32,32 @@ class TestBatterySimulator(unittest.TestCase):
         self.assertFalse(battery.needs_charging(), "Should be False")
 
         battery_too_low = BatterySimulator(0.14)
-        self.assertTrue(battery_too_low.needs_charging(), "Should be False")
+        self.assertTrue(battery_too_low.needs_charging(), "Should be True")
+
+    def test_stop_at_zero(self):
+        """ Check that battery stops at 0 """
+        level = 0.01
+        level_reduction = 0.05
+        battery = BatterySimulator(level, level_reduction)
+
+        self.assertEqual(battery.level, 0.01, "Should be 0.98")
+        self.assertEqual(
+            battery.level, 0, "Should be 0"
+        )
+        self.assertEqual(
+            battery.level, 0, "Should be 0"
+        )
+
+    def test_stop_at_one(self):
+        """ Check that battery stops at 1 """
+        level = 0.95
+        level_reduction = -0.1
+        battery = BatterySimulator(level, level_reduction)
+
+        self.assertEqual(battery.level, 0.95, "Should be 0.95")
+        self.assertEqual(
+            battery.level, 1, "Should be 1"
+        )
+        self.assertEqual(
+            battery.level, 1, "Should be 1"
+        )
